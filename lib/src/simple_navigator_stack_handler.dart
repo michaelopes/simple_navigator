@@ -1,0 +1,319 @@
+import 'dart:async';
+import 'dart:core';
+
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:queue/queue.dart';
+import 'package:uuid/uuid.dart';
+
+import 'simple_navigator_route.dart';
+import 'simple_navigator_splash_completer_mixin.dart';
+import 'simple_navigator_utils.dart';
+
+enum StackActionType { push, pop }
+
+class SimpleNavigatoStackItem {
+  final SimpleNavigatorRoute route;
+  late final Uri uri;
+  late final Completer<dynamic> resultCompleter;
+  late bool _allowBuild;
+  late final Map<String, dynamic> _extras;
+  Page? _page;
+
+  SimpleNavigatoStackItem({
+    required this.route,
+    required String itemPath,
+    Map<String, String> queryParameters = const {},
+    Map<String, dynamic> extras = const {},
+  }) {
+    _allowBuild = true;
+    _extras = extras;
+    var queryString = Uri(queryParameters: queryParameters).query;
+    if (queryString.isNotEmpty) {
+      queryString = (itemPath.contains("?") ? "&" : "?") + queryString;
+    }
+    uri = Uri.parse(itemPath + queryString);
+    resultCompleter = Completer();
+  }
+
+  bool get hasPage => !_allowBuild;
+
+  Map<String, String> get pathParameters =>
+      Map.unmodifiable(route.extractParams(uri.path));
+
+  Map<String, String> get queryParameters =>
+      Map.unmodifiable(uri.queryParameters);
+
+  Map<String, dynamic> get extras => Map.unmodifiable(_extras);
+
+  Page page(BuildContext context) {
+    if (_allowBuild) {
+      _page = MaterialPage(
+        child: route.builder(context),
+        name: uri.path,
+        maintainState: true,
+        key: ValueKey("${const Uuid().v4()}${uri.toString()}"),
+        restorationId: const Uuid().v4(),
+        arguments: {
+          "pathParameters": pathParameters,
+          "queryParameters": queryParameters,
+          "extras": extras,
+        },
+      );
+    }
+    _allowBuild = false;
+    return _page!;
+  }
+}
+
+class SimpleNavigatoStackLoadingItem extends SimpleNavigatoStackItem {
+  SimpleNavigatoStackLoadingItem({
+    WidgetBuilder? guardLoadingBuilder,
+  }) : super(
+          itemPath: "/page-guard-loading",
+          route: SimpleNavigatorRoute(
+            path: "/page-guard-loading",
+            builder: (context) =>
+                guardLoadingBuilder?.call(context) ??
+                Material(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: const SizedBox.expand(
+                    child: Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                  ),
+                ),
+          ),
+        );
+}
+
+class SimpleNavigatoStackHandler {
+  final List<SimpleNavigatorRoute> availableRoutes;
+  final String initialRoute;
+  final WidgetBuilder? notFound;
+  final WidgetBuilder? splash;
+
+  final List<SimpleNavigatoStackItem> _stack = [];
+  final BuildContext Function() getContext;
+  final VoidCallback notifyListeners;
+  final _queue = Queue();
+
+  bool _isAddStack = true;
+
+  SimpleNavigatoStackHandler({
+    required this.availableRoutes,
+    required this.getContext,
+    required this.notifyListeners,
+    this.initialRoute = "/",
+    this.notFound,
+    this.splash,
+  }) {
+    if (!availableRoutes.any((e) => e.hasMatch(initialRoute))) {
+      throw Exception("Initial route \"$initialRoute\" has not found.");
+    }
+  }
+
+  void loadInitialRoute() {
+    final item = SimpleNavigatoStackItem(
+      itemPath: initialRoute,
+      route: _getItemByPath(initialRoute),
+    );
+    _queue.add(
+      () => _processPush(
+        initialRoute,
+        item,
+        isInitial: true,
+      ),
+    );
+  }
+
+  SimpleNavigatorRoute _getItemByPath(String path) {
+    final r = availableRoutes.firstWhereOrNull(
+      (e) => e.hasMatch(path),
+    );
+    if (r != null) {
+      return r;
+    } else {
+      return SimpleNavigatorRoute(
+        builder: (context) =>
+            notFound?.call(context) ??
+            const Material(
+              color: Colors.red,
+              child: SizedBox.expand(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "404 Page Not Found!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        path: path,
+      );
+    }
+  }
+
+  Future<dynamic> push(
+    String path, {
+    Map<String, String> queryParameters = const {},
+    Map<String, dynamic> extras = const {},
+  }) {
+    _isAddStack = true;
+    final route = _getItemByPath(path);
+    final item = SimpleNavigatoStackItem(
+      itemPath: path,
+      queryParameters: queryParameters,
+      route: route,
+    );
+    _queue.add(() async => _processPush(path, item));
+    return item.resultCompleter.future;
+  }
+
+  Future<void> _processPush(
+    String path,
+    SimpleNavigatoStackItem item, {
+    bool isInitial = false,
+  }) async {
+    if (isInitial) {
+      _stack.clear();
+    }
+
+    if (!item.hasPage && item.route.guard != null && _isAddStack) {
+      Widget? wSplash;
+      _stack.add(
+        SimpleNavigatoStackLoadingItem(
+          guardLoadingBuilder: isInitial && splash != null
+              ? (_) {
+                  wSplash = splash!(getContext());
+                  return wSplash!;
+                }
+              : item.route.guardLoadingBuilder,
+        ),
+      );
+      if (!isInitial) notifyListeners();
+      final gRes = await item.route.guard!();
+      if (wSplash != null && wSplash is SimpleNavigatorSplashCompleterMixin) {
+        await (wSplash as SimpleNavigatorSplashCompleterMixin).wait;
+      }
+      if (!item.route.hasMatch(gRes) && gRes != initialRoute) {
+        _stack.clear();
+        _stack.add(
+          SimpleNavigatoStackItem(
+            itemPath: path,
+            route: _getItemByPath(gRes),
+          ),
+        );
+      } else {
+        _stack.removeLast();
+        _stack.add(item);
+      }
+    } else {
+      _stack.add(item);
+    }
+    notifyListeners();
+  }
+
+  bool canPop() {
+    return _stack.length > 1;
+  }
+
+  bool pop([Object? result]) {
+    bool response = false;
+    if (canPop()) {
+      _isAddStack = false;
+      var item = _stack.last;
+      _stack.removeLast();
+      item.resultCompleter.complete(result);
+      response = true;
+      notifyListeners();
+    } else if (hasItems && initialRoute != initialUri.path) {
+      loadInitialRoute();
+      notifyListeners();
+    }
+    return response;
+  }
+
+  bool popUntil(
+    String path, {
+    Object? result,
+    bool mostCloser = true,
+  }) {
+    if (canPop()) {
+      final items = _stack
+          .where(
+            (e) =>
+                e.route.hasMatch(path, prefix: true) &&
+                (Toolkit.hasPathsMatch(path, initialRoute)
+                    ? true
+                    : Toolkit.hasPathsMatch(e.route.path, initialRoute)
+                        ? false
+                        : true),
+          )
+          .toList();
+      if (items.isNotEmpty) {
+        final item = mostCloser ? items.last : items.first;
+        var index = _stack.indexOf(item) + 1;
+        if (path == initialRoute) {
+          index = 1;
+        }
+        if (index > 0) {
+          if (index >= 0 && index < _stack.length) {
+            final rItems = _stack.getRange(index, _stack.length).toList();
+            for (var rItem in rItems) {
+              rItem.resultCompleter.complete(
+                rItem == rItems.first ? result : null,
+              );
+              _stack.remove(rItem);
+            }
+            notifyListeners();
+            return true;
+          }
+        }
+      } else if (kIsWeb) {
+        pop(result);
+      }
+    }
+    return false;
+  }
+
+  StackActionType detectAction(Uri uri) {
+    final filter = _stack.where((e) => e.uri.toString() == uri.toString());
+    if (filter.isNotEmpty) {
+      final index = _stack.indexOf(filter.last);
+      if ((_stack.length - 1) >= index) {
+        return StackActionType.pop;
+      }
+    }
+    return StackActionType.push;
+  }
+
+  SimpleNavigatoStackItem? get lastStackItem =>
+      _stack.isEmpty ? null : _stack.last;
+
+  bool get hasItems => _stack.isNotEmpty;
+
+  Uri? get lastUri => _stack.isEmpty
+      ? null
+      : _stack.last is! SimpleNavigatoStackLoadingItem
+          ? _stack.last.uri
+          : null;
+
+  Uri get initialUri => _stack.isEmpty
+      ? Uri.parse(initialRoute)
+      : _stack.first is! SimpleNavigatoStackLoadingItem
+          ? _stack.first.uri
+          : Uri.parse(initialRoute);
+
+  List<Page> get pages => List.unmodifiable(
+        _stack.map((e) => e.page(getContext())).toList(),
+      );
+}
