@@ -11,6 +11,7 @@ import 'src/config/web_config.dart'
     if (dart.library.io) 'src/config/io_config.dart';
 
 import 'src/simple_navigator_params.dart';
+import 'src/simple_navigator_stack_widget.dart';
 
 class SN {
   static late final SimpleNavigatorParams _params;
@@ -39,5 +40,10 @@ class SN {
       routes: routes,
       initialRoute: initialRoute,
     );
+  }
+
+  static SimpleNavigatorStackWidgetState of(BuildContext context) {
+    return context
+        .findRootAncestorStateOfType<SimpleNavigatorStackWidgetState>()!;
   }
 }

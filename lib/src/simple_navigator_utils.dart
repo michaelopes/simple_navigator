@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_to_regexp/path_to_regexp.dart';
 
@@ -10,5 +11,37 @@ class Toolkit {
   static bool hasPathsMatch(String routePath, String itemPath) {
     final regExp = pathToRegExp(routePath);
     return regExp.hasMatch(itemPath);
+  }
+
+  static void printRedText(String text) {
+    // ANSI escape code for red text
+    const String redColorCode = '\x1B[31m';
+    // ANSI escape code to reset text color
+    const String resetColorCode = '\x1B[0m';
+    if (kDebugMode) {
+      print('$redColorCode$text$resetColorCode');
+    }
+  }
+
+  static void asset(bool Function() condition, String text) {
+    if (!condition()) {
+      printRedText(text);
+    }
+    assert(condition(), text);
+  }
+}
+
+extension UriExt on Uri {
+  Uri addQueryParameters({
+    required Map<String, String> queryParameters,
+  }) {
+    final uri = Uri(
+      path: path,
+      queryParameters: {
+        ...this.queryParameters,
+        ...queryParameters,
+      },
+    );
+    return uri;
   }
 }

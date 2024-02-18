@@ -1,6 +1,7 @@
 import 'package:example/feed_page.dart';
 import 'package:example/home_page.dart';
 import 'package:example/login_page.dart';
+import 'package:example/settings_page.dart';
 import 'package:example/splash_page.dart';
 import 'package:example/sub_page.dart';
 import 'package:flutter/material.dart';
@@ -12,17 +13,31 @@ void main() {
     splash: (_) => SplashPage(),
     initialRoute: "/login",
     routes: [
-      SimpleNavigatorRoute(
+      SimpleNavigatorTabRoute(
         path: "/",
-        builder: (_) => const HomePage(),
+        builder: (_, child) => HomePage(
+          child: child,
+        ),
+        tabs: ["/feed", "/settings"],
         guard: (path) async {
           await Future.delayed(const Duration(milliseconds: 2000));
           return path;
         },
       ),
-      SimpleNavigatorRoute(
+      /* SimpleNavigatorRoute(
         path: "/login",
         builder: (_) => const LoginPage(),
+        guard: (path) async {
+          await Future.delayed(const Duration(milliseconds: 2000));
+          return path;
+        },
+      ),*/
+      SimpleNavigatorTabRoute(
+        path: "/login",
+        builder: (_, child) => HomePage(
+          child: child,
+        ),
+        tabs: ["/feed", "/settings"],
         guard: (path) async {
           await Future.delayed(const Duration(milliseconds: 2000));
           return path;
@@ -31,6 +46,10 @@ void main() {
       SimpleNavigatorRoute(
         path: "/feed",
         builder: (_) => const FeedPage(),
+      ),
+      SimpleNavigatorRoute(
+        path: "/settings",
+        builder: (_) => const SettingsPage(),
       ),
       SimpleNavigatorRoute(
         path: "/sub/:number",

@@ -1,5 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
+import 'package:simple_navigator/src/simple_navigator_utils.dart';
 
+import 'simple_navigator_route.dart';
 import 'simple_navigator_stack_handler.dart';
 
 import 'simple_navigator_params.dart';
@@ -9,7 +12,7 @@ import 'simple_navigator_stack_widget.dart';
 final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     with ChangeNotifier {
   late final GlobalKey<NavigatorState> _navigatorKey;
-  late final SimpleNavigatoStackHandler _stackHandler;
+  late final SimpleNavigatorStackHandler _stackHandler;
 
   BuildContext? _context;
 
@@ -18,7 +21,7 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     required SimpleNavigatorParams params,
   }) {
     _navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
-    _stackHandler = SimpleNavigatoStackHandler(
+    _stackHandler = SimpleNavigatorStackHandler(
       splash: params.splash,
       notFound: params.notFound,
       availableRoutes: params.routes,
@@ -30,18 +33,27 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     );
   }
 
+  void tab(String tab, void Function(VoidCallback callback) setState) {
+    final lastUri = _stackHandler.lastUri;
+    if (lastUri != null) {
+      setState(() {
+        _stackHandler.setCurrentTab(lastUri.path, tab);
+      });
+    }
+  }
+
+  SimpleNavigatorRoute? getRouteByAbsolutePath(String path) {
+    return _stackHandler.availableRoutes.firstWhereOrNull(
+      (e) => path == e.path,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _context = context;
     return SimpleNavigatorStackWidget(
       navigatorKey: _navigatorKey,
-      pages: _stackHandler.pages,
-      onPopPage: (route, result) {
-        if (route.didPop(result)) {
-          return _stackHandler.pop(result);
-        }
-        return false;
-      },
+      stackHandler: _stackHandler,
     );
   }
 
@@ -109,7 +121,9 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
   Future<void> setInitialRoutePath(Uri configuration) {
     if (configuration.path == "/" ||
         configuration.path == _stackHandler.initialRoute) {
-      return super.setInitialRoutePath(_stackHandler.initialUri);
+      final newUri = _stackHandler.initialUri
+          .addQueryParameters(queryParameters: configuration.queryParameters);
+      return super.setInitialRoutePath(newUri);
     } else {
       return super.setInitialRoutePath(configuration);
     }
@@ -128,7 +142,10 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
       );
     } else if (configuration.path == _stackHandler.initialRoute &&
         !_stackHandler.hasItems) {
-      _stackHandler.loadInitialRoute();
+      final itemPath = !configuration.hasQuery
+          ? configuration.path
+          : configuration.toString();
+      _stackHandler.loadInitialRoute(itemPath: itemPath);
     }
   }
 

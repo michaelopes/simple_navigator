@@ -15,15 +15,17 @@ enum StackActionType { push, pop }
 
 class SimpleNavigatoStackItem {
   final SimpleNavigatorRoute route;
-  late final Uri uri;
+  late final Uri _uri;
   late final Completer<dynamic> resultCompleter;
   late bool _allowBuild;
   late final Map<String, dynamic> _extras;
   Page? _page;
+  String currentTab = "";
 
   SimpleNavigatoStackItem({
     required this.route,
     required String itemPath,
+    // required SimpleNavigatorStackHandler handler,
     Map<String, String> queryParameters = const {},
     Map<String, dynamic> extras = const {},
   }) {
@@ -31,10 +33,34 @@ class SimpleNavigatoStackItem {
     _extras = extras;
     var queryString = Uri(queryParameters: queryParameters).query;
     if (queryString.isNotEmpty) {
-      queryString = (itemPath.contains("?") ? "&" : "?") + queryString;
+      itemPath += (itemPath.contains("?") ? "&" : "?") + queryString;
     }
-    uri = Uri.parse(itemPath + queryString);
+
+    if (route is SimpleNavigatorTabRoute) {
+      final rt = route as SimpleNavigatorTabRoute;
+      if (rt.tabs.isNotEmpty) {
+        currentTab = rt.tabs.first;
+      }
+    }
+
+    _uri = Uri.parse(itemPath);
+    if (_uri.queryParameters["tab"] != null &&
+        _uri.queryParameters["tab"]!.isNotEmpty) {
+      currentTab = _uri.queryParameters["tab"]!;
+    }
     resultCompleter = Completer();
+  }
+
+  Uri get uri {
+    if (currentTab.isNotEmpty) {
+      return _uri.addQueryParameters(
+        queryParameters: {
+          "tab": currentTab.replaceAll("/", ""),
+        },
+      );
+    } else {
+      return _uri;
+    }
   }
 
   bool get hasPage => !_allowBuild;
@@ -52,7 +78,7 @@ class SimpleNavigatoStackItem {
       _page = MaterialPage(
         child: route.builder(context),
         name: uri.path,
-        maintainState: true,
+        maintainState: true, //route is SimpleNavigatorTabRoute ? false : true,
         key: ValueKey("${const Uuid().v4()}${uri.toString()}"),
         restorationId: const Uuid().v4(),
         arguments: {
@@ -88,7 +114,7 @@ class SimpleNavigatoStackLoadingItem extends SimpleNavigatoStackItem {
         );
 }
 
-class SimpleNavigatoStackHandler {
+class SimpleNavigatorStackHandler {
   final List<SimpleNavigatorRoute> availableRoutes;
   final String initialRoute;
   final WidgetBuilder? notFound;
@@ -101,7 +127,7 @@ class SimpleNavigatoStackHandler {
 
   bool _isAddStack = true;
 
-  SimpleNavigatoStackHandler({
+  SimpleNavigatorStackHandler({
     required this.availableRoutes,
     required this.getContext,
     required this.notifyListeners,
@@ -114,9 +140,12 @@ class SimpleNavigatoStackHandler {
     }
   }
 
-  void loadInitialRoute() {
+  void loadInitialRoute({String itemPath = ""}) {
+    if (itemPath.isEmpty) {
+      itemPath = initialRoute;
+    }
     final item = SimpleNavigatoStackItem(
-      itemPath: initialRoute,
+      itemPath: itemPath,
       route: _getItemByPath(initialRoute),
     );
     _queue.add(
@@ -126,6 +155,14 @@ class SimpleNavigatoStackHandler {
         isInitial: true,
       ),
     );
+  }
+
+  void setCurrentTab(String routePath, tabPath) {
+    final item = _stack.firstWhereOrNull((r) => r.route.path == routePath);
+    if (item != null) {
+      item.currentTab = tabPath;
+      notifyListeners();
+    }
   }
 
   SimpleNavigatorRoute _getItemByPath(String path) {
@@ -286,7 +323,9 @@ class SimpleNavigatoStackHandler {
   }
 
   StackActionType detectAction(Uri uri) {
-    final filter = _stack.where((e) => e.uri.toString() == uri.toString());
+    final filter = _stack.where((e) {
+      return e.uri.toString() == uri.toString();
+    });
     if (filter.isNotEmpty) {
       final index = _stack.indexOf(filter.last);
       if ((_stack.length - 1) >= index) {
