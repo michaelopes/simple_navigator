@@ -94,8 +94,7 @@ class SimpleNavigatorStackWidgetState extends State<SimpleNavigatorStackWidget>
       );
 
   @override
-  void tab(String tab, State<StatefulWidget> ownerState) =>
-      widget.deletate.tab(tab, ownerState);
+  void tab(String tab) => widget.deletate.tab(tab);
 
   @override
   String? get currentTab => widget.deletate.currentTab;

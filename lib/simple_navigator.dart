@@ -1,6 +1,7 @@
 library simple_navigator;
 
 export 'src/simple_navigator_route.dart';
+export 'src/simple_navigator_tabs_builder.dart';
 export 'src/simple_navigator_splash_completer_mixin.dart';
 
 import 'package:flutter/material.dart';

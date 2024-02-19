@@ -18,7 +18,8 @@ class SimpleNavigatorTabsWidget extends StatefulWidget {
 }
 
 class _SimpleNavigatorTabsWidgetState extends State<SimpleNavigatorTabsWidget> {
-  final List<Page> _availablePages = [];
+  final _availableItems = <_TabItem>[];
+  final _pushedItems = <_TabItem>[];
   String _target = "";
 
   @override
@@ -29,15 +30,19 @@ class _SimpleNavigatorTabsWidgetState extends State<SimpleNavigatorTabsWidget> {
   }
 
   void _load() {
-    _availablePages.clear();
+    _availableItems.clear();
     for (var tab in widget.tabs) {
       final route = SN.to.getRouteByAbsolutePath(tab);
       if (route != null) {
-        _availablePages.add(
-          _TabPage(
+        _availableItems.add(
+          _TabItem(
+            isFirst: tab == widget.tabs.first,
+            page: _TabPage(
+              name: "/tab$tab",
+              restorationId: const Uuid().v4(),
+              child: route.builder(context),
+            ),
             name: "/tab$tab",
-            restorationId: const Uuid().v4(),
-            child: route.builder(context),
           ),
         );
       }
@@ -74,17 +79,25 @@ class _SimpleNavigatorTabsWidgetState extends State<SimpleNavigatorTabsWidget> {
   Widget build(BuildContext context) {
     _target = SN.to.currentTab ?? "";
     final targetName = "/tab$_target";
-    final page = _availablePages.firstWhereOrNull(
+    final item = _availableItems.firstWhereOrNull(
       (e) => _target.isNotEmpty && e.name == targetName,
     );
-    Page? firstPage = _target != widget.tabs.first
-        ? _availablePages.firstWhereOrNull(
-            (e) => _target.isNotEmpty && e.name == "/tab${widget.tabs.first}",
-          )
-        : null;
+    if (item != null) {
+      if (item.isFirst && _pushedItems.any((e) => e.isFirst)) {
+        _pushedItems.removeLast();
+      } else if (item.isFirst && !_pushedItems.any((e) => e.isFirst)) {
+        _pushedItems.clear();
+        _pushedItems.add(item);
+      } else if (!item.isFirst) {
+        if (_pushedItems.length > 1) {
+          _pushedItems.removeLast();
+        }
+        _pushedItems.add(item);
+      }
+    }
 
     return SizedBox.expand(
-      child: page == null
+      child: item == null
           ? const Material(
               color: Colors.red,
               child: Center(
@@ -106,10 +119,17 @@ class _SimpleNavigatorTabsWidgetState extends State<SimpleNavigatorTabsWidget> {
               onPopPage: (route, result) {
                 return false;
               },
-              pages: [if (firstPage != null) firstPage, page],
+              pages: _pushedItems.map((e) => e.page).toList(),
             ),
     );
   }
+}
+
+class _TabItem {
+  final Page page;
+  final String name;
+  final bool isFirst;
+  _TabItem({required this.name, required this.page, required this.isFirst});
 }
 
 class _TabPage<T> extends MaterialPage<T> {

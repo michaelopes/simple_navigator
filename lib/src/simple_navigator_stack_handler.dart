@@ -161,7 +161,7 @@ class SimpleNavigatorStackHandler {
   }
 
   bool setCurrentTab(String routePath, tabPath) {
-    final item = _stack.firstWhereOrNull((r) => r.route.path == routePath);
+    final item = _stack.lastWhereOrNull((r) => r.route.path == routePath);
     if (item != null) {
       if (item.currentTab != tabPath) {
         item.currentTab = tabPath;
@@ -266,20 +266,36 @@ class SimpleNavigatorStackHandler {
   }
 
   bool canPop() {
-    return _stack.length > 1;
+    return _stack.length > 1 || canPopTab();
+  }
+
+  bool canPopTab() {
+    var item = _stack.last;
+    final route = item.route;
+    if (route is SimpleNavigatorTabRoute &&
+        _stack.last.currentTab != route.tabs.first) {
+      return true;
+    }
+    return false;
   }
 
   bool pop([Object? result]) {
     var item = _stack.last;
     bool response = _dialogHandler.pop(item.referenceId, result);
     if (!response) {
+      if (canPopTab()) {
+        final route = item.route;
+        if (route is SimpleNavigatorTabRoute &&
+            _stack.last.currentTab != route.tabs.first) {
+          _stack.last.currentTab = route.tabs.first;
+          notifyListeners();
+          return true;
+        }
+      }
       if (canPop()) {
         _stack.removeLast();
         item.resultCompleter.complete(result);
         response = true;
-        notifyListeners();
-      } else if (hasItems && initialRoute != initialUri.path) {
-        loadInitialRoute();
         notifyListeners();
       }
     }
@@ -331,15 +347,20 @@ class SimpleNavigatorStackHandler {
   }
 
   StackActionType detectAction(Uri uri) {
+    if (_stack.isNotEmpty && canPopTab()) {
+      return StackActionType.pop;
+    }
     final filter = _stack.where((e) {
       return e.uri.toString() == uri.toString();
     });
+
     if (filter.isNotEmpty) {
       final index = _stack.indexOf(filter.last);
       if ((_stack.length - 1) >= index) {
         return StackActionType.pop;
       }
     }
+
     return StackActionType.push;
   }
 

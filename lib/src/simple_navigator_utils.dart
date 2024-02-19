@@ -49,7 +49,7 @@ extension UriExt on Uri {
 }
 
 abstract class ISimpleNavigator {
-  void tab(String tab, State ownerState);
+  void tab(String tab);
   SimpleNavigatorRoute? getRouteByAbsolutePath(String path);
   Future<bool> popUntil(
     String path, {

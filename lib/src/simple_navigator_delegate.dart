@@ -15,7 +15,7 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
   late final GlobalKey<NavigatorState> _navigatorKey;
   late final SimpleNavigatorStackHandler _stackHandler;
   late final List<NavigatorObserver> observers;
-  late Route<dynamic> currentRoute;
+  Route<dynamic>? currentRoute;
 
   BuildContext? _context;
 
@@ -67,12 +67,10 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
   }
 
   @override
-  void tab(String tab, State ownerState) {
+  void tab(String tab) {
     final lastUri = _stackHandler.lastUri;
     if (lastUri != null) {
-      if (_stackHandler.setCurrentTab(lastUri.path, tab)) {
-        (ownerState.context as Element).markNeedsBuild();
-      }
+      _stackHandler.setCurrentTab(lastUri.path, tab);
     }
   }
 
@@ -198,8 +196,8 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
 
   @override
   Future<bool> popRoute() async {
-    final willPopResult = await currentRoute.willPop();
-    if (willPopResult == RoutePopDisposition.pop) {
+    final willPopResult = await currentRoute?.willPop();
+    if (willPopResult == RoutePopDisposition.pop || _stackHandler.canPopTab()) {
       return _stackHandler.pop();
     }
     return true;
