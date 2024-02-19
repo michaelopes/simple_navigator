@@ -22,30 +22,35 @@ class _FeedPageState extends State<FeedPage> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        child: SizedBox(
-          height: 100,
-          child: Column(
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  SN.to.popUntil(
-                    "/sub",
-                    result: "Teste de resultado",
-                    mostCloser: false,
-                  );
-                },
-                child: const Text("POP UNTIL SUB"),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  SN.to.pop();
-                },
-                child: const Text("CLOSE"),
-              ),
-            ],
+        child: WillPopScope(
+          onWillPop: () async {
+            return false;
+          },
+          child: SizedBox(
+            height: 100,
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    SN.to.popUntil(
+                      "/sub",
+                      result: "Teste de resultado",
+                      mostCloser: false,
+                    );
+                  },
+                  child: const Text("POP UNTIL SUB"),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    SN.to.pop();
+                  },
+                  child: const Text("CLOSE"),
+                ),
+              ],
+            ),
           ),
         ),
       ),

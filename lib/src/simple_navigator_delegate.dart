@@ -1,21 +1,21 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
+
 import 'package:simple_navigator/src/simple_navigator_dialog_handler.dart';
 import 'package:simple_navigator/src/simple_navigator_utils.dart';
 
+import 'simple_navigator_params.dart';
 import 'simple_navigator_route.dart';
 import 'simple_navigator_stack_handler.dart';
-
-import 'simple_navigator_params.dart';
-
 import 'simple_navigator_stack_widget.dart';
 
 final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin
+    with ChangeNotifier
     implements ISimpleNavigator {
   late final GlobalKey<NavigatorState> _navigatorKey;
   late final SimpleNavigatorStackHandler _stackHandler;
   late final List<NavigatorObserver> observers;
+  late Route<dynamic> currentRoute;
 
   BuildContext? _context;
 
@@ -41,7 +41,13 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
       },
     );
 
-    observers = [dialogHandler, ...params.observers];
+    observers = [
+      _DelegateObserver(
+        onChangeRoute: (route) => currentRoute = route,
+      ),
+      dialogHandler,
+      ...params.observers
+    ];
   }
 
   @override
@@ -191,5 +197,39 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
   String? get currentTab => "/${getQueryParameter("tab")}";
 
   @override
-  GlobalKey<NavigatorState>? get navigatorKey => _navigatorKey;
+  Future<bool> popRoute() async {
+    final willPopResult = await currentRoute.willPop();
+    if (willPopResult == RoutePopDisposition.pop) {
+      return _stackHandler.pop();
+    }
+    return true;
+  }
+}
+
+class _DelegateObserver extends NavigatorObserver {
+  _DelegateObserver({
+    required this.onChangeRoute,
+  });
+
+  final void Function(Route<dynamic> route) onChangeRoute;
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    onChangeRoute(route);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (previousRoute != null) onChangeRoute(previousRoute);
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (previousRoute != null) onChangeRoute(previousRoute);
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    if (newRoute != null) onChangeRoute(newRoute);
+  }
 }
