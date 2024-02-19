@@ -2,23 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_navigator/simple_navigator.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.yellow,
+      backgroundColor: Colors.green,
       body: Center(
         child: ElevatedButton(
           onPressed: () async {
@@ -32,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
               print(result);
             }
           },
-          child: const Text("LOGIN GO"),
+          child: const Text("GO"),
         ),
       ),
     );

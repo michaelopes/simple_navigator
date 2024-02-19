@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_navigator/simple_navigator.dart';
 
@@ -13,7 +14,9 @@ class SubPage extends StatefulWidget {
 class _SubPageState extends State<SubPage> {
   @override
   void initState() {
-    print("_SubPageState");
+    if (kDebugMode) {
+      print("_SubPageState");
+    }
     super.initState();
   }
 
@@ -40,21 +43,21 @@ class _SubPageState extends State<SubPage> {
                 // SN.to.pop("Teste de resultado");
                 SN.to.push("/sub/${getRandomInteger()}");
               },
-              child: Text("GO"),
+              child: const Text("GO"),
             ),
             const Padding(padding: EdgeInsets.only(top: 12)),
             ElevatedButton(
               onPressed: () {
                 SN.to.pop("Teste de resultado $number");
               },
-              child: Text("BACK"),
+              child: const Text("BACK"),
             ),
             const Padding(padding: EdgeInsets.only(top: 12)),
             ElevatedButton(
               onPressed: () {
                 SN.to.push("/feed");
               },
-              child: Text("OPEN"),
+              child: const Text("OPEN"),
             ),
           ],
         ),
