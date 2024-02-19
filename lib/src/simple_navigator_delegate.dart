@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
+import 'package:simple_navigator/src/simple_navigator_dialog_handler.dart';
 import 'package:simple_navigator/src/simple_navigator_utils.dart';
 
 import 'simple_navigator_route.dart';
@@ -10,7 +11,7 @@ import 'simple_navigator_params.dart';
 import 'simple_navigator_stack_widget.dart';
 
 final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
-    with ChangeNotifier
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin
     implements ISimpleNavigator {
   late final GlobalKey<NavigatorState> _navigatorKey;
   late final SimpleNavigatorStackHandler _stackHandler;
@@ -22,19 +23,25 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     required SimpleNavigatorParams params,
     GlobalKey<NavigatorState>? navigatorKey,
   }) {
-    observers = params.observers;
-
     _navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
+
+    final dialogHandler = SimpleNavigatorDialogHandler(
+      getRouteReferenceId: () => lastRouteReferenceId,
+    );
+
     _stackHandler = SimpleNavigatorStackHandler(
       splash: params.splash,
       notFound: params.notFound,
       availableRoutes: params.routes,
       initialRoute: params.initialRoute,
+      dialogHandler: dialogHandler,
       getContext: () => _context!,
       notifyListeners: () {
         notifyListeners();
       },
     );
+
+    observers = [dialogHandler, ...params.observers];
   }
 
   @override
@@ -71,21 +78,22 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
   }
 
   @override
-  bool popUntil(
+  Future<bool> popUntil(
     String path, {
     Object? result,
     bool mostCloser = true,
-  }) {
-    final res = _stackHandler.popUntil(
+  }) async {
+    var res = _stackHandler.popUntil(
       path,
       result: result,
       mostCloser: mostCloser,
     );
+
     return res;
   }
 
   @override
-  bool pop([Object? result]) {
+  Future<bool> pop([Object? result]) async {
     final res = _stackHandler.pop(result);
     return res;
   }
@@ -131,10 +139,10 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     return null;
   }
 
-  @override
+  /* @override
   Future<bool> popRoute() async {
     return _stackHandler.pop();
-  }
+  }*/
 
   @override
   Future<void> setInitialRoutePath(Uri configuration) {
@@ -168,6 +176,8 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     }
   }
 
+  String? get lastRouteReferenceId => _stackHandler.lastRouteReferenceId;
+
   @override
   Uri? get currentConfiguration {
     final lastUri = _stackHandler.lastUri;
@@ -179,4 +189,7 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
 
   @override
   String? get currentTab => "/${getQueryParameter("tab")}";
+
+  @override
+  GlobalKey<NavigatorState>? get navigatorKey => _navigatorKey;
 }

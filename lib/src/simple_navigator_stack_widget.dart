@@ -76,10 +76,11 @@ class SimpleNavigatorStackWidgetState extends State<SimpleNavigatorStackWidget>
       widget.deletate.getRouteByAbsolutePath(path);
 
   @override
-  bool pop([Object? result]) => widget.deletate.pop(result);
+  Future<bool> pop([Object? result]) => widget.deletate.pop(result);
 
   @override
-  bool popUntil(String path, {Object? result, bool mostCloser = true}) =>
+  Future<bool> popUntil(String path,
+          {Object? result, bool mostCloser = true}) =>
       widget.deletate.popUntil(path, result: result, mostCloser: mostCloser);
 
   @override

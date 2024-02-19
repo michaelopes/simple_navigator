@@ -51,12 +51,12 @@ extension UriExt on Uri {
 abstract class ISimpleNavigator {
   void tab(String tab, State ownerState);
   SimpleNavigatorRoute? getRouteByAbsolutePath(String path);
-  bool popUntil(
+  Future<bool> popUntil(
     String path, {
     Object? result,
     bool mostCloser = true,
   });
-  bool pop([Object? result]);
+  Future<bool> pop([Object? result]);
   Future<dynamic> push(
     String path, {
     Map<String, String> queryParameters = const {},

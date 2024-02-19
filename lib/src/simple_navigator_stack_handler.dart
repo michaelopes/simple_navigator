@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:queue/queue.dart';
+import 'package:simple_navigator/src/simple_navigator_dialog_handler.dart';
 import 'package:uuid/uuid.dart';
 
 import 'simple_navigator_route.dart';
@@ -19,6 +20,7 @@ class SimpleNavigatoStackItem {
   late final Completer<dynamic> resultCompleter;
   late bool _allowBuild;
   late final Map<String, dynamic> _extras;
+  late final String referenceId;
   Page? _page;
   String currentTab = "";
 
@@ -48,6 +50,7 @@ class SimpleNavigatoStackItem {
       currentTab = _uri.queryParameters["tab"]!;
     }
     resultCompleter = Completer();
+    referenceId = const Uuid().v4();
   }
 
   Uri get uri {
@@ -78,7 +81,7 @@ class SimpleNavigatoStackItem {
         child: route.builder(context),
         name: uri.path,
         maintainState: true, //route is SimpleNavigatorTabRoute ? false : true,
-        key: ValueKey("${const Uuid().v4()}${uri.toString()}"),
+        key: ValueKey("$referenceId${uri.toString()}"),
         restorationId: const Uuid().v4(),
         arguments: {
           "pathParameters": pathParameters,
@@ -114,6 +117,7 @@ class SimpleNavigatoStackLoadingItem extends SimpleNavigatoStackItem {
 }
 
 class SimpleNavigatorStackHandler {
+  late final SimpleNavigatorDialogHandler _dialogHandler;
   final List<SimpleNavigatorRoute> availableRoutes;
   final String initialRoute;
   final WidgetBuilder? notFound;
@@ -124,16 +128,16 @@ class SimpleNavigatorStackHandler {
   final VoidCallback notifyListeners;
   final _queue = Queue();
 
-  bool _isAddStack = true;
-
   SimpleNavigatorStackHandler({
     required this.availableRoutes,
     required this.getContext,
     required this.notifyListeners,
+    required SimpleNavigatorDialogHandler dialogHandler,
     this.initialRoute = "/",
     this.notFound,
     this.splash,
   }) {
+    _dialogHandler = dialogHandler;
     if (!availableRoutes.any((e) => e.hasMatch(initialRoute))) {
       throw Exception("Initial route \"$initialRoute\" has not found.");
     }
@@ -207,7 +211,6 @@ class SimpleNavigatorStackHandler {
     Map<String, String> queryParameters = const {},
     Map<String, dynamic> extras = const {},
   }) {
-    _isAddStack = true;
     final route = _getItemByPath(path);
     final item = SimpleNavigatoStackItem(
       itemPath: path,
@@ -227,7 +230,7 @@ class SimpleNavigatorStackHandler {
       _stack.clear();
     }
 
-    if (!item.hasPage && item.route.guard != null && _isAddStack) {
+    if (!item.hasPage && item.route.guard != null) {
       Widget? wSplash;
       _stack.add(
         SimpleNavigatoStackLoadingItem(
@@ -267,17 +270,18 @@ class SimpleNavigatorStackHandler {
   }
 
   bool pop([Object? result]) {
-    bool response = false;
-    if (canPop()) {
-      _isAddStack = false;
-      var item = _stack.last;
-      _stack.removeLast();
-      item.resultCompleter.complete(result);
-      response = true;
-      notifyListeners();
-    } else if (hasItems && initialRoute != initialUri.path) {
-      loadInitialRoute();
-      notifyListeners();
+    var item = _stack.last;
+    bool response = _dialogHandler.pop(item.referenceId, result);
+    if (!response) {
+      if (canPop()) {
+        _stack.removeLast();
+        item.resultCompleter.complete(result);
+        response = true;
+        notifyListeners();
+      } else if (hasItems && initialRoute != initialUri.path) {
+        loadInitialRoute();
+        notifyListeners();
+      }
     }
     return response;
   }
@@ -312,6 +316,7 @@ class SimpleNavigatorStackHandler {
               rItem.resultCompleter.complete(
                 rItem == rItems.first ? result : null,
               );
+              _dialogHandler.popAll(rItem.referenceId);
               _stack.remove(rItem);
             }
             notifyListeners();
@@ -342,6 +347,12 @@ class SimpleNavigatorStackHandler {
       _stack.isEmpty ? null : _stack.last;
 
   bool get hasItems => _stack.isNotEmpty;
+
+  String? get lastRouteReferenceId => _stack.isEmpty
+      ? null
+      : _stack.last is! SimpleNavigatoStackLoadingItem
+          ? _stack.last.referenceId
+          : null;
 
   Uri? get lastUri => _stack.isEmpty
       ? null
