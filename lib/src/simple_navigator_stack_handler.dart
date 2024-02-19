@@ -25,7 +25,6 @@ class SimpleNavigatoStackItem {
   SimpleNavigatoStackItem({
     required this.route,
     required String itemPath,
-    // required SimpleNavigatorStackHandler handler,
     Map<String, String> queryParameters = const {},
     Map<String, dynamic> extras = const {},
   }) {
@@ -53,7 +52,7 @@ class SimpleNavigatoStackItem {
 
   Uri get uri {
     if (currentTab.isNotEmpty) {
-      return _uri.addQueryParameters(
+      return _uri.mergeQueryParameters(
         queryParameters: {
           "tab": currentTab.replaceAll("/", ""),
         },
@@ -157,12 +156,16 @@ class SimpleNavigatorStackHandler {
     );
   }
 
-  void setCurrentTab(String routePath, tabPath) {
+  bool setCurrentTab(String routePath, tabPath) {
     final item = _stack.firstWhereOrNull((r) => r.route.path == routePath);
     if (item != null) {
-      item.currentTab = tabPath;
-      notifyListeners();
+      if (item.currentTab != tabPath) {
+        item.currentTab = tabPath;
+        notifyListeners();
+        return true;
+      }
     }
+    return false;
   }
 
   SimpleNavigatorRoute _getItemByPath(String path) {

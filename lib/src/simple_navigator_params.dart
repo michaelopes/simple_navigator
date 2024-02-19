@@ -6,10 +6,12 @@ final class SimpleNavigatorParams {
   final WidgetBuilder? splash;
   final WidgetBuilder? notFound;
   final String initialRoute;
+  final List<NavigatorObserver> observers;
 
   SimpleNavigatorParams({
     required this.routes,
     required this.initialRoute,
+    this.observers = const [],
     this.splash,
     this.notFound,
   });

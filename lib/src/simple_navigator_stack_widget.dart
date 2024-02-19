@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'simple_navigator_stack_handler.dart';
+import 'package:simple_navigator/src/simple_navigator_route.dart';
+import 'simple_navigator_delegate.dart';
+import 'simple_navigator_utils.dart';
 
 class SimpleNavigatorStackWidget extends StatefulWidget {
   const SimpleNavigatorStackWidget({
     Key? key,
-    //required this.pages,
+    required this.pages,
     required this.navigatorKey,
-    required this.stackHandler,
-    // required this.onPopPage,
+    required this.deletate,
+    required this.onPopPage,
   }) : super(key: key);
 
-  // final List<Page> pages;
+  final List<Page> pages;
   final GlobalKey<NavigatorState> navigatorKey;
-  final SimpleNavigatorStackHandler stackHandler;
-  // final PopPageCallback? onPopPage;
+  final PopPageCallback? onPopPage;
+  final SimpleNavigatorDelegate deletate;
 
   @override
   State<SimpleNavigatorStackWidget> createState() =>
@@ -22,14 +24,11 @@ class SimpleNavigatorStackWidget extends StatefulWidget {
 
 typedef StackWidgetStateListener = void Function();
 
-class SimpleNavigatorStackWidgetState
-    extends State<SimpleNavigatorStackWidget> {
-  late SimpleNavigatorStackHandler stackHandler;
-
+class SimpleNavigatorStackWidgetState extends State<SimpleNavigatorStackWidget>
+    implements ISimpleNavigator {
   @override
   void initState() {
     super.initState();
-    stackHandler = widget.stackHandler;
   }
 
   @override
@@ -39,33 +38,64 @@ class SimpleNavigatorStackWidgetState
 
   @override
   void didChangeDependencies() {
-    stackHandler = widget.stackHandler;
     super.didChangeDependencies();
   }
 
   @override
   void didUpdateWidget(covariant SimpleNavigatorStackWidget oldWidget) {
-    if (widget != oldWidget) {
-      stackHandler = widget.stackHandler;
-    }
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    return stackHandler.pages.isEmpty
+    return widget.pages.isEmpty
         ? const SizedBox.shrink()
         : Navigator(
             restorationScopeId: "root",
             key: widget.navigatorKey,
-            observers: const [],
-            pages: stackHandler.pages,
-            onPopPage: (route, result) {
-              if (route.didPop(result)) {
-                return stackHandler.pop(result);
-              }
-              return false;
-            },
+            observers: widget.deletate.observers,
+            pages: widget.pages,
+            onPopPage: widget.onPopPage,
           );
   }
+
+  @override
+  T? getExtraParameter<T>(String key) =>
+      widget.deletate.getExtraParameter<T>(key);
+
+  @override
+  T? getPathParameter<T>(String key) =>
+      widget.deletate.getPathParameter<T>(key);
+
+  @override
+  T? getQueryParameter<T>(String key) =>
+      widget.deletate.getQueryParameter<T>(key);
+
+  @override
+  SimpleNavigatorRoute? getRouteByAbsolutePath(String path) =>
+      widget.deletate.getRouteByAbsolutePath(path);
+
+  @override
+  bool pop([Object? result]) => widget.deletate.pop(result);
+
+  @override
+  bool popUntil(String path, {Object? result, bool mostCloser = true}) =>
+      widget.deletate.popUntil(path, result: result, mostCloser: mostCloser);
+
+  @override
+  Future push(String path,
+          {Map<String, String> queryParameters = const {},
+          Map<String, dynamic> extras = const {}}) =>
+      widget.deletate.push(
+        path,
+        queryParameters: queryParameters,
+        extras: extras,
+      );
+
+  @override
+  void tab(String tab, State<StatefulWidget> ownerState) =>
+      widget.deletate.tab(tab, ownerState);
+
+  @override
+  String? get currentTab => widget.deletate.currentTab;
 }

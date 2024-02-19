@@ -1,6 +1,7 @@
 import 'package:example/feed_page.dart';
 import 'package:example/home_page.dart';
 import 'package:example/login_page.dart';
+import 'package:example/profile_page.dart';
 import 'package:example/settings_page.dart';
 import 'package:example/splash_page.dart';
 import 'package:example/sub_page.dart';
@@ -11,33 +12,24 @@ void main() {
   SN.setRoutes(
     urlStrategy: true,
     splash: (_) => SplashPage(),
-    initialRoute: "/login",
+    observers: [
+      TestObs(),
+    ],
     routes: [
       SimpleNavigatorTabRoute(
         path: "/",
         builder: (_, child) => HomePage(
           child: child,
         ),
-        tabs: ["/feed", "/settings"],
+        tabs: ["/feed", "/settings", "/profile"],
         guard: (path) async {
           await Future.delayed(const Duration(milliseconds: 2000));
           return path;
         },
       ),
-      /* SimpleNavigatorRoute(
+      SimpleNavigatorRoute(
         path: "/login",
         builder: (_) => const LoginPage(),
-        guard: (path) async {
-          await Future.delayed(const Duration(milliseconds: 2000));
-          return path;
-        },
-      ),*/
-      SimpleNavigatorTabRoute(
-        path: "/login",
-        builder: (_, child) => HomePage(
-          child: child,
-        ),
-        tabs: ["/feed", "/settings"],
         guard: (path) async {
           await Future.delayed(const Duration(milliseconds: 2000));
           return path;
@@ -50,6 +42,14 @@ void main() {
       SimpleNavigatorRoute(
         path: "/settings",
         builder: (_) => const SettingsPage(),
+      ),
+      SimpleNavigatorRoute(
+        path: "/profile",
+        builder: (_) => const ProfilePage(),
+        guard: (path) async {
+          await Future.delayed(const Duration(milliseconds: 50));
+          return path;
+        },
       ),
       SimpleNavigatorRoute(
         path: "/sub/:number",
@@ -76,5 +76,19 @@ class MyApp extends StatelessWidget {
       routerDelegate: SN.delegate,
       routeInformationParser: SN.parser,
     );
+  }
+}
+
+class TestObs extends NavigatorObserver {
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    print("didPush ${route.settings.name}");
+    super.didPush(route, previousRoute);
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    print("didPop ${route.settings.name}");
+    super.didPush(route, previousRoute);
   }
 }

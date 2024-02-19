@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_to_regexp/path_to_regexp.dart';
 
+import 'simple_navigator_route.dart';
+
 typedef RouterBuilderFunc = Widget Function();
 typedef RouteGuardFunc = Future<String> Function(String path);
 
@@ -32,7 +34,7 @@ class Toolkit {
 }
 
 extension UriExt on Uri {
-  Uri addQueryParameters({
+  Uri mergeQueryParameters({
     required Map<String, String> queryParameters,
   }) {
     final uri = Uri(
@@ -44,4 +46,25 @@ extension UriExt on Uri {
     );
     return uri;
   }
+}
+
+abstract class ISimpleNavigator {
+  void tab(String tab, State ownerState);
+  SimpleNavigatorRoute? getRouteByAbsolutePath(String path);
+  bool popUntil(
+    String path, {
+    Object? result,
+    bool mostCloser = true,
+  });
+  bool pop([Object? result]);
+  Future<dynamic> push(
+    String path, {
+    Map<String, String> queryParameters = const {},
+    Map<String, dynamic> extras = const {},
+  });
+  T? getQueryParameter<T>(String key);
+  T? getPathParameter<T>(String key);
+  T? getExtraParameter<T>(String key);
+
+  String? get currentTab;
 }

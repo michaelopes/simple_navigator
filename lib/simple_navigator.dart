@@ -30,6 +30,7 @@ class SN {
     WidgetBuilder? splash,
     WidgetBuilder? notFound,
     bool urlStrategy = false,
+    List<NavigatorObserver> observers = const [],
   }) {
     if (urlStrategy) {
       configureUrlStrategy();
@@ -39,6 +40,7 @@ class SN {
       splash: splash,
       routes: routes,
       initialRoute: initialRoute,
+      observers: observers,
     );
   }
 

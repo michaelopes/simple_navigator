@@ -10,16 +10,20 @@ import 'simple_navigator_params.dart';
 import 'simple_navigator_stack_widget.dart';
 
 final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
-    with ChangeNotifier {
+    with ChangeNotifier
+    implements ISimpleNavigator {
   late final GlobalKey<NavigatorState> _navigatorKey;
   late final SimpleNavigatorStackHandler _stackHandler;
+  late final List<NavigatorObserver> observers;
 
   BuildContext? _context;
 
   SimpleNavigatorDelegate({
-    GlobalKey<NavigatorState>? navigatorKey,
     required SimpleNavigatorParams params,
+    GlobalKey<NavigatorState>? navigatorKey,
   }) {
+    observers = params.observers;
+
     _navigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
     _stackHandler = SimpleNavigatorStackHandler(
       splash: params.splash,
@@ -33,15 +37,33 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     );
   }
 
-  void tab(String tab, void Function(VoidCallback callback) setState) {
+  @override
+  Widget build(BuildContext context) {
+    _context = context;
+    return SimpleNavigatorStackWidget(
+      deletate: this,
+      navigatorKey: _navigatorKey,
+      pages: _stackHandler.pages,
+      onPopPage: (route, result) {
+        if (route.didPop(result)) {
+          return _stackHandler.pop(result);
+        }
+        return false;
+      },
+    );
+  }
+
+  @override
+  void tab(String tab, State ownerState) {
     final lastUri = _stackHandler.lastUri;
     if (lastUri != null) {
-      setState(() {
-        _stackHandler.setCurrentTab(lastUri.path, tab);
-      });
+      if (_stackHandler.setCurrentTab(lastUri.path, tab)) {
+        (ownerState.context as Element).markNeedsBuild();
+      }
     }
   }
 
+  @override
   SimpleNavigatorRoute? getRouteByAbsolutePath(String path) {
     return _stackHandler.availableRoutes.firstWhereOrNull(
       (e) => path == e.path,
@@ -49,14 +71,6 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
   }
 
   @override
-  Widget build(BuildContext context) {
-    _context = context;
-    return SimpleNavigatorStackWidget(
-      navigatorKey: _navigatorKey,
-      stackHandler: _stackHandler,
-    );
-  }
-
   bool popUntil(
     String path, {
     Object? result,
@@ -70,11 +84,13 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     return res;
   }
 
+  @override
   bool pop([Object? result]) {
     final res = _stackHandler.pop(result);
     return res;
   }
 
+  @override
   Future<dynamic> push(
     String path, {
     Map<String, String> queryParameters = const {},
@@ -88,6 +104,7 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     return future;
   }
 
+  @override
   T? getQueryParameter<T>(String key) {
     final item = _stackHandler.lastStackItem;
     if (item != null) {
@@ -96,6 +113,7 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     return null;
   }
 
+  @override
   T? getPathParameter<T>(String key) {
     final item = _stackHandler.lastStackItem;
     if (item != null) {
@@ -104,6 +122,7 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     return null;
   }
 
+  @override
   T? getExtraParameter<T>(String key) {
     final item = _stackHandler.lastStackItem;
     if (item != null) {
@@ -122,7 +141,7 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     if (configuration.path == "/" ||
         configuration.path == _stackHandler.initialRoute) {
       final newUri = _stackHandler.initialUri
-          .addQueryParameters(queryParameters: configuration.queryParameters);
+          .mergeQueryParameters(queryParameters: configuration.queryParameters);
       return super.setInitialRoutePath(newUri);
     } else {
       return super.setInitialRoutePath(configuration);
@@ -157,4 +176,7 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     }
     return null;
   }
+
+  @override
+  String? get currentTab => "/${getQueryParameter("tab")}";
 }
