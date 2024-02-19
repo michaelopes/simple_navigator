@@ -14,20 +14,40 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green,
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            var result = await SN.to.push(
-              "/sub/0?outro=true",
-              queryParameters: {
-                "teste": "true",
+      body: SizedBox.expand(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () async {
+                var result = await SN.to.push(
+                  "/tabs",
+                );
+                if (kDebugMode) {
+                  print(result);
+                }
               },
-            );
-            if (kDebugMode) {
-              print(result);
-            }
-          },
-          child: const Text("GO"),
+              child: const Text("GO TO SUB TABS"),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                var result = await SN.to.push(
+                  "/sub/0?outro=true",
+                  queryParameters: {
+                    "teste": "true",
+                  },
+                );
+                if (kDebugMode) {
+                  print(result);
+                }
+              },
+              child: const Text("GO"),
+            ),
+          ],
         ),
       ),
     );

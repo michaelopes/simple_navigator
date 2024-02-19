@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_navigator/simple_navigator.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({
+class TabsPage extends StatefulWidget {
+  const TabsPage({
     super.key,
     required this.child,
   });
@@ -11,14 +11,14 @@ class HomePage extends StatefulWidget {
   final Widget child;
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<TabsPage> createState() => _TabsPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _TabsPageState extends State<TabsPage> {
   @override
   void initState() {
     if (kDebugMode) {
-      print("_HomePageState");
+      print("_TabsPageState");
     }
     super.initState();
   }

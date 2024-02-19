@@ -6,6 +6,7 @@ import 'package:example/profile_page.dart';
 import 'package:example/settings_page.dart';
 import 'package:example/splash_page.dart';
 import 'package:example/sub_page.dart';
+import 'package:example/tabs_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_navigator/simple_navigator.dart';
@@ -26,6 +27,17 @@ void main() {
         tabs: ["/main", "/settings", "/profile"],
         guard: (path) async {
           await Future.delayed(const Duration(milliseconds: 2000));
+          return path;
+        },
+      ),
+      SimpleNavigatorTabRoute(
+        path: "/tabs",
+        builder: (_, child) => TabsPage(
+          child: child,
+        ),
+        tabs: ["/main", "/settings", "/profile"],
+        guard: (path) async {
+          await Future.delayed(const Duration(milliseconds: 20));
           return path;
         },
       ),
