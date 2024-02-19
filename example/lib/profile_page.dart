@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_navigator/simple_navigator.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -19,10 +20,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.brown,
       body: Center(
-        child: Text("PROFILE PAGE"),
+        child: ElevatedButton(
+          onPressed: () {
+            SN.of(context).push("/tabs");
+          },
+          child: const Text("PROFILE GO TO SUB TABS"),
+        ),
       ),
     );
   }
