@@ -9,15 +9,18 @@ class SimpleNavigatorRoute {
   final WidgetBuilder? guardLoadingBuilder;
   Future<String> Function()? guard;
 
-  late final Uri _uri;
+  final String path;
 
   SimpleNavigatorRoute({
-    required String path,
+    required this.path,
     required this.builder,
     this.guardLoadingBuilder,
     RouteGuardFunc? guard,
   }) {
-    _uri = Uri.parse(path);
+    Toolkit.assrt(
+      () => Toolkit.isValidRoutePath(path),
+      "Invalid path name '$path'",
+    );
     if (guard != null) {
       this.guard = () => guard!(path);
     } else {
@@ -34,16 +37,16 @@ class SimpleNavigatorRoute {
   }
 
   Map<String, String> extractParams(String finalPath) {
-    final parameters = <String>[];
-    final regExp = pathToRegExp(path, parameters: parameters);
-    final match = regExp.matchAsPrefix(finalPath);
-    if (match != null) {
-      return extract(parameters, match);
+    if (hasMatch(finalPath)) {
+      final parameters = <String>[];
+      final regExp = pathToRegExp(path, parameters: parameters);
+      final match = regExp.matchAsPrefix(finalPath);
+      if (match != null) {
+        return extract(parameters, match);
+      }
     }
     return {};
   }
-
-  String get path => _uri.path;
 }
 
 typedef WidgetTabBuilder = Widget Function(BuildContext context, Widget child);
@@ -70,12 +73,12 @@ class SimpleNavigatorTabRoute extends SimpleNavigatorRoute {
             );
           },
         ) {
-    Toolkit.asset(
+    Toolkit.assrt(
       () => tabs.isEmpty || tabs.length > 1,
       "The list of tabs must be greater than or equal to 2.",
     );
     for (var tab in tabs) {
-      Toolkit.asset(
+      Toolkit.assrt(
         () => tab.contains("/") && tab.split("/").length <= 2,
         "Tab path is invalid. Tab path must be '/<tab-path>' as in the examples '/feed-tab' or '/feed'",
       );

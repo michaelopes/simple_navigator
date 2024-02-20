@@ -138,15 +138,10 @@ final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
   T? getExtraParameter<T>(String key) {
     final item = _stackHandler.lastStackItem;
     if (item != null) {
-      return item.pathParameters[key] as T?;
+      return item.extras[key] as T?;
     }
     return null;
   }
-
-  /* @override
-  Future<bool> popRoute() async {
-    return _stackHandler.pop();
-  }*/
 
   @override
   Future<void> setInitialRoutePath(Uri configuration) {

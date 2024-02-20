@@ -215,6 +215,7 @@ class SimpleNavigatorStackHandler {
     final item = SimpleNavigatoStackItem(
       itemPath: path,
       queryParameters: queryParameters,
+      extras: extras,
       route: route,
     );
     _queue.add(() async => _processPush(path, item));

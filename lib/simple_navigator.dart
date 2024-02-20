@@ -15,12 +15,12 @@ import 'src/simple_navigator_params.dart';
 import 'src/simple_navigator_stack_widget.dart';
 
 class SN {
-  static late final SimpleNavigatorParams _params;
+  static late SimpleNavigatorParams _params;
   static final navigatorKey = GlobalKey<NavigatorState>();
   static final parser = SimpleNavigatorParser();
   static SimpleNavigatorDelegate get delegate => to;
 
-  static final to = SimpleNavigatorDelegate(
+  static SimpleNavigatorDelegate to = SimpleNavigatorDelegate(
     params: _params,
     navigatorKey: navigatorKey,
   );
@@ -42,6 +42,14 @@ class SN {
       routes: routes,
       initialRoute: initialRoute,
       observers: observers,
+    );
+  }
+
+  @visibleForTesting
+  static void reloadForTest() {
+    to = SimpleNavigatorDelegate(
+      params: _params,
+      navigatorKey: navigatorKey,
     );
   }
 

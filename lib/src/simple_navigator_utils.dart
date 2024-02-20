@@ -15,6 +15,23 @@ class Toolkit {
     return regExp.hasMatch(itemPath);
   }
 
+  static bool isValidRoutePath(String routePath) {
+    if (!routePath.startsWith("/")) return false;
+    if (routePath.isEmpty) return false;
+    final pathSegments = routePath.split("/").where((e) => e.isNotEmpty);
+    if (pathSegments.isEmpty && routePath == "/") return true;
+    RegExp regex = RegExp(r'^[a-zA-Z0-9\-_:/\[\]\(\)\$\^+\\]+$');
+    for (var segment in pathSegments) {
+      if (!regex.hasMatch(segment) ||
+          !(segment[0].startsWith(RegExp(r'^[a-zA-Z0-9]+$')) ||
+              segment[0].startsWith(":"))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   static void printRedText(String text) {
     // ANSI escape code for red text
     const String redColorCode = '\x1B[31m';
@@ -25,7 +42,7 @@ class Toolkit {
     }
   }
 
-  static void asset(bool Function() condition, String text) {
+  static void assrt(bool Function() condition, String text) {
     if (!condition()) {
       printRedText(text);
     }

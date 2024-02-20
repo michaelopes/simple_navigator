@@ -8,12 +8,19 @@ class _SimpleNavigatorDialogItem {
 }
 
 class SimpleNavigatorDialogHandler extends NavigatorObserver {
+  NavigatorState? _customNavigator;
   SimpleNavigatorDialogHandler({
     required this.getRouteReferenceId,
-  });
+    NavigatorState? customNavigator,
+  }) {
+    _customNavigator = customNavigator;
+  }
 
   final String? Function() getRouteReferenceId;
   final _storage = <_SimpleNavigatorDialogItem>[];
+
+  @override
+  NavigatorState? get navigator => _customNavigator ?? super.navigator;
 
   @override
   void didPush(Route route, Route? previousRoute) {

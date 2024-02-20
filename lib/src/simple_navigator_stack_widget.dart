@@ -32,21 +32,6 @@ class SimpleNavigatorStackWidgetState extends State<SimpleNavigatorStackWidget>
   }
 
   @override
-  void setState(VoidCallback fn) {
-    super.setState(fn);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(covariant SimpleNavigatorStackWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return widget.pages.isEmpty
         ? const SizedBox.shrink()
