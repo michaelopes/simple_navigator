@@ -1,5 +1,5 @@
 
-[![Build](https://github.com/michaelopes/simple_navigator/actions/workflows/build.yaml/badge.svg)](https://github.com/michaelopes/simple_navigator/actions/workflows/build.yaml) [![codecov](https://codecov.io/gh/michaelopes/simple_navigator/branch/main/graph/badge.svg)](https://codecov.io/gh/michaelopes/simple_navigator)
+[![Build](https://github.com/michaelopes/simple_navigator/actions/workflows/build.yaml/badge.svg)](https://github.com/michaelopes/simple_navigator/actions/workflows/build.yaml) [![codecov](https://codecov.io/gh/michaelopes/simple_navigator/graph/badge.svg?token=7AS82WFNNW)](https://codecov.io/gh/michaelopes/simple_navigator)
 [![pub](https://img.shields.io/pub/v/simple_navigator.svg?color=success)](https://pub.dev/packages/simple_navigator)
 
 <!--
