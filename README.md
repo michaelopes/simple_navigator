@@ -1,3 +1,7 @@
+
+[![Build](https://github.com/michaelopes/simple_navigator/actions/workflows/build.yaml/badge.svg)](https://github.com/michaelopes/simple_navigator/actions/workflows/build.yaml) [![codecov](https://codecov.io/gh/michaelopes/simple_navigator/branch/main/graph/badge.svg)](https://codecov.io/gh/michaelopes/simple_navigator)
+[![pub](https://img.shields.io/pub/v/simple_navigator.svg?color=success)](https://pub.dev/packages/simple_navigator)
+
 <!--
 This README describes the package. If you publish this package to pub.dev,
 this README's contents appear on the landing page for your package.
