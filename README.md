@@ -231,7 +231,7 @@ SN.to.popUntil("/<route name>", /* value to be returned (optional) */);
 ```
 ### Tab Navigation
 ```dart
-final result = await SN.to.tab("/<tab name>");
+await SN.to.tab("/<tab name>");
 ```
 
 ## Tab page example
