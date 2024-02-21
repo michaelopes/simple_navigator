@@ -1,6 +1,6 @@
 name: simple_navigator
 description: This package comes with a simpler alternative to use than the go_router. If your project requires more complex routing, use the go_router.
-version: 1.0.0-beta.3
+version: 1.0.0-beta.4
 homepage: https://github.com/michaelopes/simple_navigator
 license: MIT
 

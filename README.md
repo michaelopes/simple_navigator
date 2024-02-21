@@ -85,8 +85,10 @@ Here's an example of how you can set up routes using SimpleNavigator:
         ),
         tabs: ["/main", "/settings", "/profile"],
         guard: (path) async {
-          await Future.delayed(const Duration(milliseconds: 2000));
-          return path;
+          //Example to use
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          isUserLogged = prefs.getString('user-logged') != null;
+          return isUserLogged ? path : "/login";
         },
       ),
       //Here is a example a non-root route with support for tabs is created.
@@ -97,8 +99,6 @@ Here's an example of how you can set up routes using SimpleNavigator:
         ),
         tabs: ["/main", "/settings", "/profile"],
         guard: (path) async {
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          isUserLogged = prefs.getString('user-logged') != null;
           return isUserLogged ? path : "/login";
         },
       ),
