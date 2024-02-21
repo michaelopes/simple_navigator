@@ -4,12 +4,12 @@
 
 # SimpleNavigator - Flutter Package for Easy Named Route Navigation
 
-SimpleNavigator is a lightweight Flutter package designed to simplify named route navigation within your Flutter application. With a focus on simplicity and ease of use, SimpleNavigator provides an alternative to more complex navigation solutions like go_router.
+SimpleNavigator is a lightweight Flutter package designed to simplify named route navigation within your Flutter application. With a focus on simplicity and ease of use, SimpleNavigator offers an alternative to more complex navigation solutions as proposed by the go_router package.
 
 ## Features
 - **Easy-to-Use API:** Simplify your navigation code with a straightforward API.
 - **Tabbed Navigation:** Seamlessly integrate tab-based navigation with SimpleNavigatorTabRoute.
-- **Route Guards:** Add route guards to delay navigation or perform asynchronous tasks before navigating.
+- **Route Guards:** Add route guards to checking before navigation or perform asynchronous tasks before navigating.
 - **URL Strategy:** Enable URL strategy for cleaner and more user-friendly URLs.
 
 ## Getting Started
@@ -89,7 +89,7 @@ Here's an example of how you can set up routes using SimpleNavigator:
           return path;
         },
       ),
-      //Here, a non-root route with support for tabs is created.
+      //Here is a example a non-root route with support for tabs is created.
       SimpleNavigatorTabRoute(
         path: "/tabs",
         builder: (_, child) => TabsPage(
