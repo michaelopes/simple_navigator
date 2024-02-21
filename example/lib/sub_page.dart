@@ -55,6 +55,13 @@ class _SubPageState extends State<SubPage> {
             const Padding(padding: EdgeInsets.only(top: 12)),
             ElevatedButton(
               onPressed: () {
+                SN.to.replaceCurrent("/sub/1000");
+              },
+              child: const Text("REPLACE"),
+            ),
+            const Padding(padding: EdgeInsets.only(top: 12)),
+            ElevatedButton(
+              onPressed: () {
                 SN.to.push("/feed");
               },
               child: const Text("OPEN"),

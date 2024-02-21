@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryHi">92.1&nbsp;%</td>
-            <td class="headerCovTableEntry">164</td>
-            <td class="headerCovTableEntry">151</td>
+            <td class="headerCovTableEntryMed">85.5&nbsp;%</td>
+            <td class="headerCovTableEntry">186</td>
+            <td class="headerCovTableEntry">159</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2024-02-20 15:27:45</td>
+            <td class="headerValue">2024-02-21 18:36:01</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -284,176 +284,233 @@
 <span id="L222"><span class="lineNum">     222</span> <span class="tlaGNC">           4 :     return item.resultCompleter.future;</span></span>
 <span id="L223"><span class="lineNum">     223</span>              :   }</span>
 <span id="L224"><span class="lineNum">     224</span>              : </span>
-<span id="L225"><span class="lineNum">     225</span> <span class="tlaGNC">           2 :   Future&lt;void&gt; _processPush(</span></span>
-<span id="L226"><span class="lineNum">     226</span>              :     String path,</span>
-<span id="L227"><span class="lineNum">     227</span>              :     SimpleNavigatoStackItem item, {</span>
-<span id="L228"><span class="lineNum">     228</span>              :     bool isInitial = false,</span>
+<span id="L225"><span class="lineNum">     225</span> <span class="tlaUNC tlaBgUNC">           0 :   Future&lt;dynamic&gt; replaceCurrent(</span></span>
+<span id="L226"><span class="lineNum">     226</span>              :     String path, {</span>
+<span id="L227"><span class="lineNum">     227</span>              :     Map&lt;String, String&gt; queryParameters = const {},</span>
+<span id="L228"><span class="lineNum">     228</span>              :     Map&lt;String, dynamic&gt; extras = const {},</span>
 <span id="L229"><span class="lineNum">     229</span>              :   }) async {</span>
-<span id="L230"><span class="lineNum">     230</span>              :     if (isInitial) {</span>
-<span id="L231"><span class="lineNum">     231</span> <span class="tlaGNC">           4 :       _stack.clear();</span></span>
+<span id="L230"><span class="lineNum">     230</span> <span class="tlaUNC">           0 :     if (Toolkit.hasPathsMatch(initialRoute, path)) {</span></span>
+<span id="L231"><span class="lineNum">     231</span>              :       return;</span>
 <span id="L232"><span class="lineNum">     232</span>              :     }</span>
 <span id="L233"><span class="lineNum">     233</span>              : </span>
-<span id="L234"><span class="lineNum">     234</span> <span class="tlaGNC">           6 :     if (!item.hasPage &amp;&amp; item.route.guard != null) {</span></span>
-<span id="L235"><span class="lineNum">     235</span>              :       Widget? wSplash;</span>
-<span id="L236"><span class="lineNum">     236</span> <span class="tlaGNC">           4 :       _stack.add(</span></span>
-<span id="L237"><span class="lineNum">     237</span> <span class="tlaGNC">           2 :         SimpleNavigatoStackLoadingItem(</span></span>
-<span id="L238"><span class="lineNum">     238</span> <span class="tlaGNC">           2 :           guardLoadingBuilder: isInitial &amp;&amp; splash != null</span></span>
-<span id="L239"><span class="lineNum">     239</span> <span class="tlaGNC">           1 :               ? (_) {</span></span>
-<span id="L240"><span class="lineNum">     240</span> <span class="tlaGNC">           4 :                   wSplash = splash!(getContext());</span></span>
-<span id="L241"><span class="lineNum">     241</span>              :                   return wSplash!;</span>
-<span id="L242"><span class="lineNum">     242</span>              :                 }</span>
-<span id="L243"><span class="lineNum">     243</span> <span class="tlaGNC">           4 :               : item.route.guardLoadingBuilder,</span></span>
-<span id="L244"><span class="lineNum">     244</span>              :         ),</span>
-<span id="L245"><span class="lineNum">     245</span>              :       );</span>
-<span id="L246"><span class="lineNum">     246</span> <span class="tlaGNC">           4 :       if (!isInitial) notifyListeners();</span></span>
-<span id="L247"><span class="lineNum">     247</span> <span class="tlaGNC">           6 :       final gRes = await item.route.guard!();</span></span>
-<span id="L248"><span class="lineNum">     248</span> <span class="tlaGNC">           1 :       if (wSplash != null &amp;&amp; wSplash is SimpleNavigatorSplashCompleterMixin) {</span></span>
-<span id="L249"><span class="lineNum">     249</span> <span class="tlaGNC">           1 :         await (wSplash as SimpleNavigatorSplashCompleterMixin).wait;</span></span>
-<span id="L250"><span class="lineNum">     250</span>              :       }</span>
-<span id="L251"><span class="lineNum">     251</span> <span class="tlaGNC">           4 :       if (!item.route.hasMatch(gRes) &amp;&amp; gRes != initialRoute) {</span></span>
-<span id="L252"><span class="lineNum">     252</span> <span class="tlaUNC tlaBgUNC">           0 :         _stack.clear();</span></span>
-<span id="L253"><span class="lineNum">     253</span> <span class="tlaUNC">           0 :         _stack.add(</span></span>
-<span id="L254"><span class="lineNum">     254</span> <span class="tlaUNC">           0 :           SimpleNavigatoStackItem(</span></span>
-<span id="L255"><span class="lineNum">     255</span>              :             itemPath: path,</span>
-<span id="L256"><span class="lineNum">     256</span> <span class="tlaUNC">           0 :             route: _getItemByPath(gRes),</span></span>
-<span id="L257"><span class="lineNum">     257</span>              :           ),</span>
-<span id="L258"><span class="lineNum">     258</span>              :         );</span>
-<span id="L259"><span class="lineNum">     259</span>              :       } else {</span>
-<span id="L260"><span class="lineNum">     260</span> <span class="tlaGNC tlaBgGNC">           4 :         _stack.removeLast();</span></span>
-<span id="L261"><span class="lineNum">     261</span> <span class="tlaGNC">           4 :         _stack.add(item);</span></span>
-<span id="L262"><span class="lineNum">     262</span>              :       }</span>
-<span id="L263"><span class="lineNum">     263</span>              :     } else {</span>
-<span id="L264"><span class="lineNum">     264</span> <span class="tlaUNC tlaBgUNC">           0 :       _stack.add(item);</span></span>
-<span id="L265"><span class="lineNum">     265</span>              :     }</span>
-<span id="L266"><span class="lineNum">     266</span> <span class="tlaGNC tlaBgGNC">           4 :     notifyListeners();</span></span>
-<span id="L267"><span class="lineNum">     267</span>              :   }</span>
-<span id="L268"><span class="lineNum">     268</span>              : </span>
-<span id="L269"><span class="lineNum">     269</span> <span class="tlaGNC">           2 :   bool canPop() {</span></span>
-<span id="L270"><span class="lineNum">     270</span> <span class="tlaGNC">           7 :     return _stack.length &gt; 1 || canPopTab();</span></span>
-<span id="L271"><span class="lineNum">     271</span>              :   }</span>
-<span id="L272"><span class="lineNum">     272</span>              : </span>
-<span id="L273"><span class="lineNum">     273</span> <span class="tlaGNC">           2 :   bool canPopTab() {</span></span>
-<span id="L274"><span class="lineNum">     274</span> <span class="tlaGNC">           4 :     var item = _stack.last;</span></span>
-<span id="L275"><span class="lineNum">     275</span> <span class="tlaGNC">           2 :     final route = item.route;</span></span>
-<span id="L276"><span class="lineNum">     276</span> <span class="tlaGNC">           2 :     if (route is SimpleNavigatorTabRoute &amp;&amp;</span></span>
-<span id="L277"><span class="lineNum">     277</span> <span class="tlaGNC">          12 :         _stack.last.currentTab != route.tabs.first) {</span></span>
-<span id="L278"><span class="lineNum">     278</span>              :       return true;</span>
-<span id="L279"><span class="lineNum">     279</span>              :     }</span>
-<span id="L280"><span class="lineNum">     280</span>              :     return false;</span>
-<span id="L281"><span class="lineNum">     281</span>              :   }</span>
-<span id="L282"><span class="lineNum">     282</span>              : </span>
-<span id="L283"><span class="lineNum">     283</span> <span class="tlaGNC">           2 :   bool pop([Object? result]) {</span></span>
-<span id="L284"><span class="lineNum">     284</span> <span class="tlaGNC">           4 :     var item = _stack.last;</span></span>
-<span id="L285"><span class="lineNum">     285</span> <span class="tlaGNC">           6 :     bool response = _dialogHandler.pop(item.referenceId, result);</span></span>
-<span id="L286"><span class="lineNum">     286</span>              :     if (!response) {</span>
-<span id="L287"><span class="lineNum">     287</span> <span class="tlaGNC">           2 :       if (canPopTab()) {</span></span>
-<span id="L288"><span class="lineNum">     288</span> <span class="tlaGNC">           2 :         final route = item.route;</span></span>
-<span id="L289"><span class="lineNum">     289</span> <span class="tlaGNC">           2 :         if (route is SimpleNavigatorTabRoute &amp;&amp;</span></span>
-<span id="L290"><span class="lineNum">     290</span> <span class="tlaGNC">          12 :             _stack.last.currentTab != route.tabs.first) {</span></span>
-<span id="L291"><span class="lineNum">     291</span> <span class="tlaGNC">          10 :           _stack.last.currentTab = route.tabs.first;</span></span>
-<span id="L292"><span class="lineNum">     292</span> <span class="tlaGNC">           4 :           notifyListeners();</span></span>
-<span id="L293"><span class="lineNum">     293</span>              :           return true;</span>
-<span id="L294"><span class="lineNum">     294</span>              :         }</span>
+<span id="L234"><span class="lineNum">     234</span> <span class="tlaUNC">           0 :     if (lastRouteReferenceId != null) {</span></span>
+<span id="L235"><span class="lineNum">     235</span> <span class="tlaUNC">           0 :       _dialogHandler.popAll(lastRouteReferenceId!);</span></span>
+<span id="L236"><span class="lineNum">     236</span>              :     }</span>
+<span id="L237"><span class="lineNum">     237</span>              : </span>
+<span id="L238"><span class="lineNum">     238</span> <span class="tlaUNC">           0 :     final route = _getItemByPath(path);</span></span>
+<span id="L239"><span class="lineNum">     239</span> <span class="tlaUNC">           0 :     final item = SimpleNavigatoStackItem(</span></span>
+<span id="L240"><span class="lineNum">     240</span>              :       itemPath: path,</span>
+<span id="L241"><span class="lineNum">     241</span>              :       queryParameters: queryParameters,</span>
+<span id="L242"><span class="lineNum">     242</span>              :       extras: extras,</span>
+<span id="L243"><span class="lineNum">     243</span>              :       route: route,</span>
+<span id="L244"><span class="lineNum">     244</span>              :     );</span>
+<span id="L245"><span class="lineNum">     245</span>              : </span>
+<span id="L246"><span class="lineNum">     246</span> <span class="tlaUNC">           0 :     _queue.add(() async =&gt; _processPush(path, item, replaceOrigin: true));</span></span>
+<span id="L247"><span class="lineNum">     247</span> <span class="tlaUNC">           0 :     return item.resultCompleter.future;</span></span>
+<span id="L248"><span class="lineNum">     248</span>              :   }</span>
+<span id="L249"><span class="lineNum">     249</span>              : </span>
+<span id="L250"><span class="lineNum">     250</span> <span class="tlaGNC tlaBgGNC">           2 :   Future&lt;void&gt; _processPush(</span></span>
+<span id="L251"><span class="lineNum">     251</span>              :     String path,</span>
+<span id="L252"><span class="lineNum">     252</span>              :     SimpleNavigatoStackItem item, {</span>
+<span id="L253"><span class="lineNum">     253</span>              :     bool isInitial = false,</span>
+<span id="L254"><span class="lineNum">     254</span>              :     bool replaceOrigin = false,</span>
+<span id="L255"><span class="lineNum">     255</span>              :   }) async {</span>
+<span id="L256"><span class="lineNum">     256</span>              :     if (isInitial) {</span>
+<span id="L257"><span class="lineNum">     257</span> <span class="tlaGNC">           4 :       _stack.clear();</span></span>
+<span id="L258"><span class="lineNum">     258</span>              :     }</span>
+<span id="L259"><span class="lineNum">     259</span>              : </span>
+<span id="L260"><span class="lineNum">     260</span> <span class="tlaGNC">           6 :     if (!item.hasPage &amp;&amp; item.route.guard != null) {</span></span>
+<span id="L261"><span class="lineNum">     261</span>              :       Widget? wSplash;</span>
+<span id="L262"><span class="lineNum">     262</span> <span class="tlaGNC">           4 :       _stack.add(</span></span>
+<span id="L263"><span class="lineNum">     263</span> <span class="tlaGNC">           2 :         SimpleNavigatoStackLoadingItem(</span></span>
+<span id="L264"><span class="lineNum">     264</span> <span class="tlaGNC">           2 :           guardLoadingBuilder: isInitial &amp;&amp; splash != null</span></span>
+<span id="L265"><span class="lineNum">     265</span> <span class="tlaGNC">           1 :               ? (_) {</span></span>
+<span id="L266"><span class="lineNum">     266</span> <span class="tlaGNC">           4 :                   wSplash = splash!(getContext());</span></span>
+<span id="L267"><span class="lineNum">     267</span>              :                   return wSplash!;</span>
+<span id="L268"><span class="lineNum">     268</span>              :                 }</span>
+<span id="L269"><span class="lineNum">     269</span> <span class="tlaGNC">           4 :               : item.route.guardLoadingBuilder,</span></span>
+<span id="L270"><span class="lineNum">     270</span>              :         ),</span>
+<span id="L271"><span class="lineNum">     271</span>              :       );</span>
+<span id="L272"><span class="lineNum">     272</span>              :       if (!isInitial) {</span>
+<span id="L273"><span class="lineNum">     273</span> <span class="tlaGNC">           2 :         _notifyWithNeglect();</span></span>
+<span id="L274"><span class="lineNum">     274</span>              :       }</span>
+<span id="L275"><span class="lineNum">     275</span> <span class="tlaGNC">           6 :       final gRes = await item.route.guard!();</span></span>
+<span id="L276"><span class="lineNum">     276</span> <span class="tlaGNC">           1 :       if (wSplash != null &amp;&amp; wSplash is SimpleNavigatorSplashCompleterMixin) {</span></span>
+<span id="L277"><span class="lineNum">     277</span> <span class="tlaGNC">           1 :         await (wSplash as SimpleNavigatorSplashCompleterMixin).wait;</span></span>
+<span id="L278"><span class="lineNum">     278</span>              :       }</span>
+<span id="L279"><span class="lineNum">     279</span> <span class="tlaGNC">           4 :       if (!item.route.hasMatch(gRes) &amp;&amp; gRes != initialRoute) {</span></span>
+<span id="L280"><span class="lineNum">     280</span> <span class="tlaUNC tlaBgUNC">           0 :         _stack.clear();</span></span>
+<span id="L281"><span class="lineNum">     281</span> <span class="tlaUNC">           0 :         _stack.add(</span></span>
+<span id="L282"><span class="lineNum">     282</span> <span class="tlaUNC">           0 :           SimpleNavigatoStackItem(</span></span>
+<span id="L283"><span class="lineNum">     283</span>              :             itemPath: path,</span>
+<span id="L284"><span class="lineNum">     284</span> <span class="tlaUNC">           0 :             route: _getItemByPath(gRes),</span></span>
+<span id="L285"><span class="lineNum">     285</span>              :           ),</span>
+<span id="L286"><span class="lineNum">     286</span>              :         );</span>
+<span id="L287"><span class="lineNum">     287</span>              :       } else {</span>
+<span id="L288"><span class="lineNum">     288</span>              :         if (replaceOrigin) {</span>
+<span id="L289"><span class="lineNum">     289</span> <span class="tlaUNC">           0 :           _stack.removeLast();</span></span>
+<span id="L290"><span class="lineNum">     290</span>              :         }</span>
+<span id="L291"><span class="lineNum">     291</span> <span class="tlaGNC tlaBgGNC">           4 :         if (_stack.isNotEmpty) {</span></span>
+<span id="L292"><span class="lineNum">     292</span> <span class="tlaGNC">           4 :           _stack.removeLast();</span></span>
+<span id="L293"><span class="lineNum">     293</span>              :         }</span>
+<span id="L294"><span class="lineNum">     294</span> <span class="tlaGNC">           4 :         _stack.add(item);</span></span>
 <span id="L295"><span class="lineNum">     295</span>              :       }</span>
-<span id="L296"><span class="lineNum">     296</span> <span class="tlaGNC">           2 :       if (canPop()) {</span></span>
-<span id="L297"><span class="lineNum">     297</span> <span class="tlaGNC">           4 :         _stack.removeLast();</span></span>
-<span id="L298"><span class="lineNum">     298</span> <span class="tlaGNC">           4 :         item.resultCompleter.complete(result);</span></span>
-<span id="L299"><span class="lineNum">     299</span>              :         response = true;</span>
-<span id="L300"><span class="lineNum">     300</span> <span class="tlaGNC">           4 :         notifyListeners();</span></span>
-<span id="L301"><span class="lineNum">     301</span>              :       }</span>
-<span id="L302"><span class="lineNum">     302</span>              :     }</span>
-<span id="L303"><span class="lineNum">     303</span>              :     return response;</span>
-<span id="L304"><span class="lineNum">     304</span>              :   }</span>
-<span id="L305"><span class="lineNum">     305</span>              : </span>
-<span id="L306"><span class="lineNum">     306</span> <span class="tlaGNC">           2 :   bool popUntil(</span></span>
-<span id="L307"><span class="lineNum">     307</span>              :     String path, {</span>
-<span id="L308"><span class="lineNum">     308</span>              :     Object? result,</span>
-<span id="L309"><span class="lineNum">     309</span>              :     bool mostCloser = true,</span>
-<span id="L310"><span class="lineNum">     310</span>              :   }) {</span>
-<span id="L311"><span class="lineNum">     311</span> <span class="tlaGNC">           2 :     if (canPop()) {</span></span>
-<span id="L312"><span class="lineNum">     312</span> <span class="tlaGNC">           2 :       final items = _stack</span></span>
-<span id="L313"><span class="lineNum">     313</span> <span class="tlaGNC">           2 :           .where(</span></span>
-<span id="L314"><span class="lineNum">     314</span> <span class="tlaGNC">           2 :             (e) =&gt;</span></span>
-<span id="L315"><span class="lineNum">     315</span> <span class="tlaGNC">           4 :                 e.route.hasMatch(path, prefix: true) &amp;&amp;</span></span>
-<span id="L316"><span class="lineNum">     316</span> <span class="tlaGNC">           4 :                 (Toolkit.hasPathsMatch(path, initialRoute)</span></span>
-<span id="L317"><span class="lineNum">     317</span>              :                     ? true</span>
-<span id="L318"><span class="lineNum">     318</span> <span class="tlaGNC">           8 :                     : Toolkit.hasPathsMatch(e.route.path, initialRoute)</span></span>
-<span id="L319"><span class="lineNum">     319</span>              :                         ? false</span>
-<span id="L320"><span class="lineNum">     320</span>              :                         : true),</span>
-<span id="L321"><span class="lineNum">     321</span>              :           )</span>
-<span id="L322"><span class="lineNum">     322</span> <span class="tlaGNC">           2 :           .toList();</span></span>
-<span id="L323"><span class="lineNum">     323</span> <span class="tlaGNC">           2 :       if (items.isNotEmpty) {</span></span>
-<span id="L324"><span class="lineNum">     324</span> <span class="tlaGNC">           4 :         final item = mostCloser ? items.last : items.first;</span></span>
-<span id="L325"><span class="lineNum">     325</span> <span class="tlaGNC">           6 :         var index = _stack.indexOf(item) + 1;</span></span>
-<span id="L326"><span class="lineNum">     326</span> <span class="tlaGNC">           4 :         if (path == initialRoute) {</span></span>
-<span id="L327"><span class="lineNum">     327</span>              :           index = 1;</span>
-<span id="L328"><span class="lineNum">     328</span>              :         }</span>
-<span id="L329"><span class="lineNum">     329</span> <span class="tlaGNC">           2 :         if (index &gt; 0) {</span></span>
-<span id="L330"><span class="lineNum">     330</span> <span class="tlaGNC">           8 :           if (index &gt;= 0 &amp;&amp; index &lt; _stack.length) {</span></span>
-<span id="L331"><span class="lineNum">     331</span> <span class="tlaGNC">          10 :             final rItems = _stack.getRange(index, _stack.length).toList();</span></span>
-<span id="L332"><span class="lineNum">     332</span> <span class="tlaGNC">           4 :             for (var rItem in rItems) {</span></span>
-<span id="L333"><span class="lineNum">     333</span> <span class="tlaGNC">           4 :               rItem.resultCompleter.complete(</span></span>
-<span id="L334"><span class="lineNum">     334</span> <span class="tlaGNC">           4 :                 rItem == rItems.first ? result : null,</span></span>
-<span id="L335"><span class="lineNum">     335</span>              :               );</span>
-<span id="L336"><span class="lineNum">     336</span> <span class="tlaGNC">           6 :               _dialogHandler.popAll(rItem.referenceId);</span></span>
-<span id="L337"><span class="lineNum">     337</span> <span class="tlaGNC">           4 :               _stack.remove(rItem);</span></span>
-<span id="L338"><span class="lineNum">     338</span>              :             }</span>
-<span id="L339"><span class="lineNum">     339</span> <span class="tlaGNC">           4 :             notifyListeners();</span></span>
-<span id="L340"><span class="lineNum">     340</span>              :             return true;</span>
-<span id="L341"><span class="lineNum">     341</span>              :           }</span>
-<span id="L342"><span class="lineNum">     342</span>              :         }</span>
-<span id="L343"><span class="lineNum">     343</span>              :       } else if (kIsWeb) {</span>
-<span id="L344"><span class="lineNum">     344</span> <span class="tlaUNC tlaBgUNC">           0 :         pop(result);</span></span>
-<span id="L345"><span class="lineNum">     345</span>              :       }</span>
-<span id="L346"><span class="lineNum">     346</span>              :     }</span>
-<span id="L347"><span class="lineNum">     347</span>              :     return false;</span>
-<span id="L348"><span class="lineNum">     348</span>              :   }</span>
-<span id="L349"><span class="lineNum">     349</span>              : </span>
-<span id="L350"><span class="lineNum">     350</span> <span class="tlaGNC tlaBgGNC">           1 :   StackActionType detectAction(Uri uri) {</span></span>
-<span id="L351"><span class="lineNum">     351</span> <span class="tlaGNC">           3 :     if (_stack.isNotEmpty &amp;&amp; canPopTab()) {</span></span>
-<span id="L352"><span class="lineNum">     352</span>              :       return StackActionType.pop;</span>
-<span id="L353"><span class="lineNum">     353</span>              :     }</span>
-<span id="L354"><span class="lineNum">     354</span> <span class="tlaGNC">           3 :     final filter = _stack.where((e) {</span></span>
-<span id="L355"><span class="lineNum">     355</span> <span class="tlaGNC">           4 :       return e.uri.toString() == uri.toString();</span></span>
-<span id="L356"><span class="lineNum">     356</span>              :     });</span>
-<span id="L357"><span class="lineNum">     357</span>              : </span>
-<span id="L358"><span class="lineNum">     358</span> <span class="tlaGNC">           1 :     if (filter.isNotEmpty) {</span></span>
-<span id="L359"><span class="lineNum">     359</span> <span class="tlaGNC">           3 :       final index = _stack.indexOf(filter.last);</span></span>
-<span id="L360"><span class="lineNum">     360</span> <span class="tlaGNC">           4 :       if ((_stack.length - 1) &gt;= index) {</span></span>
-<span id="L361"><span class="lineNum">     361</span>              :         return StackActionType.pop;</span>
-<span id="L362"><span class="lineNum">     362</span>              :       }</span>
-<span id="L363"><span class="lineNum">     363</span>              :     }</span>
-<span id="L364"><span class="lineNum">     364</span>              : </span>
-<span id="L365"><span class="lineNum">     365</span>              :     return StackActionType.push;</span>
-<span id="L366"><span class="lineNum">     366</span>              :   }</span>
-<span id="L367"><span class="lineNum">     367</span>              : </span>
-<span id="L368"><span class="lineNum">     368</span> <span class="tlaGNC">           1 :   SimpleNavigatoStackItem? get lastStackItem =&gt;</span></span>
-<span id="L369"><span class="lineNum">     369</span> <span class="tlaGNC">           4 :       _stack.isEmpty ? null : _stack.last;</span></span>
-<span id="L370"><span class="lineNum">     370</span>              : </span>
-<span id="L371"><span class="lineNum">     371</span> <span class="tlaGNC">           3 :   bool get hasItems =&gt; _stack.isNotEmpty;</span></span>
-<span id="L372"><span class="lineNum">     372</span>              : </span>
-<span id="L373"><span class="lineNum">     373</span> <span class="tlaGNC">           3 :   String? get lastRouteReferenceId =&gt; _stack.isEmpty</span></span>
-<span id="L374"><span class="lineNum">     374</span>              :       ? null</span>
-<span id="L375"><span class="lineNum">     375</span> <span class="tlaGNC">           3 :       : _stack.last is! SimpleNavigatoStackLoadingItem</span></span>
-<span id="L376"><span class="lineNum">     376</span> <span class="tlaGNC">           3 :           ? _stack.last.referenceId</span></span>
-<span id="L377"><span class="lineNum">     377</span>              :           : null;</span>
-<span id="L378"><span class="lineNum">     378</span>              : </span>
-<span id="L379"><span class="lineNum">     379</span> <span class="tlaGNC">           6 :   Uri? get lastUri =&gt; _stack.isEmpty</span></span>
-<span id="L380"><span class="lineNum">     380</span>              :       ? null</span>
-<span id="L381"><span class="lineNum">     381</span> <span class="tlaGNC">           6 :       : _stack.last is! SimpleNavigatoStackLoadingItem</span></span>
-<span id="L382"><span class="lineNum">     382</span> <span class="tlaGNC">           6 :           ? _stack.last.uri</span></span>
-<span id="L383"><span class="lineNum">     383</span>              :           : null;</span>
-<span id="L384"><span class="lineNum">     384</span>              : </span>
-<span id="L385"><span class="lineNum">     385</span> <span class="tlaGNC">           3 :   Uri get initialUri =&gt; _stack.isEmpty</span></span>
-<span id="L386"><span class="lineNum">     386</span> <span class="tlaGNC">           2 :       ? Uri.parse(initialRoute)</span></span>
-<span id="L387"><span class="lineNum">     387</span> <span class="tlaGNC">           3 :       : _stack.first is! SimpleNavigatoStackLoadingItem</span></span>
-<span id="L388"><span class="lineNum">     388</span> <span class="tlaUNC tlaBgUNC">           0 :           ? _stack.first.uri</span></span>
-<span id="L389"><span class="lineNum">     389</span> <span class="tlaGNC tlaBgGNC">           2 :           : Uri.parse(initialRoute);</span></span>
-<span id="L390"><span class="lineNum">     390</span>              : </span>
-<span id="L391"><span class="lineNum">     391</span> <span class="tlaGNC">           4 :   List&lt;Page&gt; get pages =&gt; List.unmodifiable(</span></span>
-<span id="L392"><span class="lineNum">     392</span> <span class="tlaGNC">          14 :         _stack.map((e) =&gt; e.page(getContext())).toList(),</span></span>
-<span id="L393"><span class="lineNum">     393</span>              :       );</span>
-<span id="L394"><span class="lineNum">     394</span>              : }</span>
+<span id="L296"><span class="lineNum">     296</span>              :     } else {</span>
+<span id="L297"><span class="lineNum">     297</span> <span class="tlaUNC tlaBgUNC">           0 :       if (_stack.isEmpty &amp;&amp; replaceOrigin) {</span></span>
+<span id="L298"><span class="lineNum">     298</span> <span class="tlaUNC">           0 :         _stack.removeLast();</span></span>
+<span id="L299"><span class="lineNum">     299</span>              :       }</span>
+<span id="L300"><span class="lineNum">     300</span> <span class="tlaUNC">           0 :       _stack.add(item);</span></span>
+<span id="L301"><span class="lineNum">     301</span>              :     }</span>
+<span id="L302"><span class="lineNum">     302</span>              :     if (replaceOrigin || isInitial) {</span>
+<span id="L303"><span class="lineNum">     303</span> <span class="tlaGNC tlaBgGNC">           2 :       _notifyWithNeglect();</span></span>
+<span id="L304"><span class="lineNum">     304</span>              :     } else {</span>
+<span id="L305"><span class="lineNum">     305</span> <span class="tlaGNC">           4 :       notifyListeners();</span></span>
+<span id="L306"><span class="lineNum">     306</span>              :     }</span>
+<span id="L307"><span class="lineNum">     307</span>              :   }</span>
+<span id="L308"><span class="lineNum">     308</span>              : </span>
+<span id="L309"><span class="lineNum">     309</span> <span class="tlaGNC">           2 :   void _notifyWithNeglect() {</span></span>
+<span id="L310"><span class="lineNum">     310</span>              :     try {</span>
+<span id="L311"><span class="lineNum">     311</span> <span class="tlaGNC">           4 :       final ctx = getContext();</span></span>
+<span id="L312"><span class="lineNum">     312</span> <span class="tlaGNC">           2 :       if (Router.maybeOf(ctx) != null) {</span></span>
+<span id="L313"><span class="lineNum">     313</span> <span class="tlaGNC">           2 :         Router.neglect(ctx, () {</span></span>
+<span id="L314"><span class="lineNum">     314</span> <span class="tlaGNC">           2 :           notifyListeners();</span></span>
+<span id="L315"><span class="lineNum">     315</span>              :         });</span>
+<span id="L316"><span class="lineNum">     316</span>              :       } else {</span>
+<span id="L317"><span class="lineNum">     317</span> <span class="tlaGNC">           2 :         notifyListeners();</span></span>
+<span id="L318"><span class="lineNum">     318</span>              :       }</span>
+<span id="L319"><span class="lineNum">     319</span> <span class="tlaUNC tlaBgUNC">           0 :     } on NullableBuildContext {</span></span>
+<span id="L320"><span class="lineNum">     320</span> <span class="tlaUNC">           0 :       notifyListeners();</span></span>
+<span id="L321"><span class="lineNum">     321</span>              :     }</span>
+<span id="L322"><span class="lineNum">     322</span>              :   }</span>
+<span id="L323"><span class="lineNum">     323</span>              : </span>
+<span id="L324"><span class="lineNum">     324</span> <span class="tlaGNC tlaBgGNC">           2 :   bool canPop() {</span></span>
+<span id="L325"><span class="lineNum">     325</span> <span class="tlaGNC">           7 :     return _stack.length &gt; 1 || canPopTab();</span></span>
+<span id="L326"><span class="lineNum">     326</span>              :   }</span>
+<span id="L327"><span class="lineNum">     327</span>              : </span>
+<span id="L328"><span class="lineNum">     328</span> <span class="tlaGNC">           2 :   bool canPopTab() {</span></span>
+<span id="L329"><span class="lineNum">     329</span> <span class="tlaGNC">           4 :     var item = _stack.last;</span></span>
+<span id="L330"><span class="lineNum">     330</span> <span class="tlaGNC">           2 :     final route = item.route;</span></span>
+<span id="L331"><span class="lineNum">     331</span> <span class="tlaGNC">           2 :     if (route is SimpleNavigatorTabRoute &amp;&amp;</span></span>
+<span id="L332"><span class="lineNum">     332</span> <span class="tlaGNC">          12 :         _stack.last.currentTab != route.tabs.first) {</span></span>
+<span id="L333"><span class="lineNum">     333</span>              :       return true;</span>
+<span id="L334"><span class="lineNum">     334</span>              :     }</span>
+<span id="L335"><span class="lineNum">     335</span>              :     return false;</span>
+<span id="L336"><span class="lineNum">     336</span>              :   }</span>
+<span id="L337"><span class="lineNum">     337</span>              : </span>
+<span id="L338"><span class="lineNum">     338</span> <span class="tlaGNC">           2 :   bool pop([Object? result]) {</span></span>
+<span id="L339"><span class="lineNum">     339</span> <span class="tlaGNC">           4 :     var item = _stack.last;</span></span>
+<span id="L340"><span class="lineNum">     340</span> <span class="tlaGNC">           6 :     bool response = _dialogHandler.pop(item.referenceId, result);</span></span>
+<span id="L341"><span class="lineNum">     341</span>              :     if (!response) {</span>
+<span id="L342"><span class="lineNum">     342</span> <span class="tlaGNC">           2 :       if (canPopTab()) {</span></span>
+<span id="L343"><span class="lineNum">     343</span> <span class="tlaGNC">           2 :         final route = item.route;</span></span>
+<span id="L344"><span class="lineNum">     344</span> <span class="tlaGNC">           2 :         if (route is SimpleNavigatorTabRoute &amp;&amp;</span></span>
+<span id="L345"><span class="lineNum">     345</span> <span class="tlaGNC">          12 :             _stack.last.currentTab != route.tabs.first) {</span></span>
+<span id="L346"><span class="lineNum">     346</span> <span class="tlaGNC">          10 :           _stack.last.currentTab = route.tabs.first;</span></span>
+<span id="L347"><span class="lineNum">     347</span> <span class="tlaGNC">           4 :           notifyListeners();</span></span>
+<span id="L348"><span class="lineNum">     348</span>              :           return true;</span>
+<span id="L349"><span class="lineNum">     349</span>              :         }</span>
+<span id="L350"><span class="lineNum">     350</span>              :       }</span>
+<span id="L351"><span class="lineNum">     351</span> <span class="tlaGNC">           2 :       if (canPop()) {</span></span>
+<span id="L352"><span class="lineNum">     352</span> <span class="tlaGNC">           4 :         _stack.removeLast();</span></span>
+<span id="L353"><span class="lineNum">     353</span> <span class="tlaGNC">           4 :         item.resultCompleter.complete(result);</span></span>
+<span id="L354"><span class="lineNum">     354</span>              :         response = true;</span>
+<span id="L355"><span class="lineNum">     355</span> <span class="tlaGNC">           4 :         notifyListeners();</span></span>
+<span id="L356"><span class="lineNum">     356</span>              :       }</span>
+<span id="L357"><span class="lineNum">     357</span>              :     }</span>
+<span id="L358"><span class="lineNum">     358</span>              :     return response;</span>
+<span id="L359"><span class="lineNum">     359</span>              :   }</span>
+<span id="L360"><span class="lineNum">     360</span>              : </span>
+<span id="L361"><span class="lineNum">     361</span> <span class="tlaGNC">           2 :   bool popUntil(</span></span>
+<span id="L362"><span class="lineNum">     362</span>              :     String path, {</span>
+<span id="L363"><span class="lineNum">     363</span>              :     Object? result,</span>
+<span id="L364"><span class="lineNum">     364</span>              :     bool mostCloser = true,</span>
+<span id="L365"><span class="lineNum">     365</span>              :   }) {</span>
+<span id="L366"><span class="lineNum">     366</span> <span class="tlaGNC">           2 :     if (canPop()) {</span></span>
+<span id="L367"><span class="lineNum">     367</span> <span class="tlaGNC">           2 :       final items = _stack</span></span>
+<span id="L368"><span class="lineNum">     368</span> <span class="tlaGNC">           2 :           .where(</span></span>
+<span id="L369"><span class="lineNum">     369</span> <span class="tlaGNC">           2 :             (e) =&gt;</span></span>
+<span id="L370"><span class="lineNum">     370</span> <span class="tlaGNC">           4 :                 e.route.hasMatch(path, prefix: true) &amp;&amp;</span></span>
+<span id="L371"><span class="lineNum">     371</span> <span class="tlaGNC">           4 :                 (Toolkit.hasPathsMatch(path, initialRoute)</span></span>
+<span id="L372"><span class="lineNum">     372</span>              :                     ? true</span>
+<span id="L373"><span class="lineNum">     373</span> <span class="tlaGNC">           8 :                     : Toolkit.hasPathsMatch(e.route.path, initialRoute)</span></span>
+<span id="L374"><span class="lineNum">     374</span>              :                         ? false</span>
+<span id="L375"><span class="lineNum">     375</span>              :                         : true),</span>
+<span id="L376"><span class="lineNum">     376</span>              :           )</span>
+<span id="L377"><span class="lineNum">     377</span> <span class="tlaGNC">           2 :           .toList();</span></span>
+<span id="L378"><span class="lineNum">     378</span> <span class="tlaGNC">           2 :       if (items.isNotEmpty) {</span></span>
+<span id="L379"><span class="lineNum">     379</span> <span class="tlaGNC">           4 :         final item = mostCloser ? items.last : items.first;</span></span>
+<span id="L380"><span class="lineNum">     380</span> <span class="tlaGNC">           6 :         var index = _stack.indexOf(item) + 1;</span></span>
+<span id="L381"><span class="lineNum">     381</span> <span class="tlaGNC">           4 :         if (path == initialRoute) {</span></span>
+<span id="L382"><span class="lineNum">     382</span>              :           index = 1;</span>
+<span id="L383"><span class="lineNum">     383</span>              :         }</span>
+<span id="L384"><span class="lineNum">     384</span> <span class="tlaGNC">           2 :         if (index &gt; 0) {</span></span>
+<span id="L385"><span class="lineNum">     385</span> <span class="tlaGNC">           8 :           if (index &gt;= 0 &amp;&amp; index &lt; _stack.length) {</span></span>
+<span id="L386"><span class="lineNum">     386</span> <span class="tlaGNC">          10 :             final rItems = _stack.getRange(index, _stack.length).toList();</span></span>
+<span id="L387"><span class="lineNum">     387</span> <span class="tlaGNC">           4 :             for (var rItem in rItems) {</span></span>
+<span id="L388"><span class="lineNum">     388</span> <span class="tlaGNC">           4 :               rItem.resultCompleter.complete(</span></span>
+<span id="L389"><span class="lineNum">     389</span> <span class="tlaGNC">           4 :                 rItem == rItems.first ? result : null,</span></span>
+<span id="L390"><span class="lineNum">     390</span>              :               );</span>
+<span id="L391"><span class="lineNum">     391</span> <span class="tlaGNC">           6 :               _dialogHandler.popAll(rItem.referenceId);</span></span>
+<span id="L392"><span class="lineNum">     392</span> <span class="tlaGNC">           4 :               _stack.remove(rItem);</span></span>
+<span id="L393"><span class="lineNum">     393</span>              :             }</span>
+<span id="L394"><span class="lineNum">     394</span> <span class="tlaGNC">           4 :             notifyListeners();</span></span>
+<span id="L395"><span class="lineNum">     395</span>              :             return true;</span>
+<span id="L396"><span class="lineNum">     396</span>              :           }</span>
+<span id="L397"><span class="lineNum">     397</span>              :         }</span>
+<span id="L398"><span class="lineNum">     398</span>              :       } else if (kIsWeb) {</span>
+<span id="L399"><span class="lineNum">     399</span> <span class="tlaUNC tlaBgUNC">           0 :         pop(result);</span></span>
+<span id="L400"><span class="lineNum">     400</span>              :       }</span>
+<span id="L401"><span class="lineNum">     401</span>              :     }</span>
+<span id="L402"><span class="lineNum">     402</span>              :     return false;</span>
+<span id="L403"><span class="lineNum">     403</span>              :   }</span>
+<span id="L404"><span class="lineNum">     404</span>              : </span>
+<span id="L405"><span class="lineNum">     405</span> <span class="tlaGNC tlaBgGNC">           1 :   StackActionType detectAction(Uri uri) {</span></span>
+<span id="L406"><span class="lineNum">     406</span> <span class="tlaGNC">           3 :     if (_stack.isNotEmpty &amp;&amp; canPopTab()) {</span></span>
+<span id="L407"><span class="lineNum">     407</span>              :       return StackActionType.pop;</span>
+<span id="L408"><span class="lineNum">     408</span>              :     }</span>
+<span id="L409"><span class="lineNum">     409</span> <span class="tlaGNC">           3 :     final filter = _stack.where((e) {</span></span>
+<span id="L410"><span class="lineNum">     410</span> <span class="tlaGNC">           4 :       return e.uri.toString() == uri.toString();</span></span>
+<span id="L411"><span class="lineNum">     411</span>              :     });</span>
+<span id="L412"><span class="lineNum">     412</span>              : </span>
+<span id="L413"><span class="lineNum">     413</span> <span class="tlaGNC">           1 :     if (filter.isNotEmpty) {</span></span>
+<span id="L414"><span class="lineNum">     414</span> <span class="tlaGNC">           3 :       final index = _stack.indexOf(filter.last);</span></span>
+<span id="L415"><span class="lineNum">     415</span> <span class="tlaGNC">           4 :       if ((_stack.length - 1) &gt;= index) {</span></span>
+<span id="L416"><span class="lineNum">     416</span>              :         return StackActionType.pop;</span>
+<span id="L417"><span class="lineNum">     417</span>              :       }</span>
+<span id="L418"><span class="lineNum">     418</span>              :     }</span>
+<span id="L419"><span class="lineNum">     419</span>              : </span>
+<span id="L420"><span class="lineNum">     420</span>              :     return StackActionType.push;</span>
+<span id="L421"><span class="lineNum">     421</span>              :   }</span>
+<span id="L422"><span class="lineNum">     422</span>              : </span>
+<span id="L423"><span class="lineNum">     423</span> <span class="tlaGNC">           1 :   SimpleNavigatoStackItem? get lastStackItem =&gt;</span></span>
+<span id="L424"><span class="lineNum">     424</span> <span class="tlaGNC">           4 :       _stack.isEmpty ? null : _stack.last;</span></span>
+<span id="L425"><span class="lineNum">     425</span>              : </span>
+<span id="L426"><span class="lineNum">     426</span> <span class="tlaGNC">           3 :   bool get hasItems =&gt; _stack.isNotEmpty;</span></span>
+<span id="L427"><span class="lineNum">     427</span>              : </span>
+<span id="L428"><span class="lineNum">     428</span> <span class="tlaGNC">           3 :   String? get lastRouteReferenceId =&gt; _stack.isEmpty</span></span>
+<span id="L429"><span class="lineNum">     429</span>              :       ? null</span>
+<span id="L430"><span class="lineNum">     430</span> <span class="tlaGNC">           3 :       : _stack.last is! SimpleNavigatoStackLoadingItem</span></span>
+<span id="L431"><span class="lineNum">     431</span> <span class="tlaGNC">           3 :           ? _stack.last.referenceId</span></span>
+<span id="L432"><span class="lineNum">     432</span>              :           : null;</span>
+<span id="L433"><span class="lineNum">     433</span>              : </span>
+<span id="L434"><span class="lineNum">     434</span> <span class="tlaGNC">           6 :   Uri? get lastUri =&gt; _stack.isEmpty</span></span>
+<span id="L435"><span class="lineNum">     435</span>              :       ? null</span>
+<span id="L436"><span class="lineNum">     436</span> <span class="tlaGNC">           6 :       : _stack.last is! SimpleNavigatoStackLoadingItem</span></span>
+<span id="L437"><span class="lineNum">     437</span> <span class="tlaGNC">           6 :           ? _stack.last.uri</span></span>
+<span id="L438"><span class="lineNum">     438</span>              :           : null;</span>
+<span id="L439"><span class="lineNum">     439</span>              : </span>
+<span id="L440"><span class="lineNum">     440</span> <span class="tlaGNC">           3 :   Uri get initialUri =&gt; _stack.isEmpty</span></span>
+<span id="L441"><span class="lineNum">     441</span> <span class="tlaGNC">           2 :       ? Uri.parse(initialRoute)</span></span>
+<span id="L442"><span class="lineNum">     442</span> <span class="tlaGNC">           3 :       : _stack.first is! SimpleNavigatoStackLoadingItem</span></span>
+<span id="L443"><span class="lineNum">     443</span> <span class="tlaUNC tlaBgUNC">           0 :           ? _stack.first.uri</span></span>
+<span id="L444"><span class="lineNum">     444</span> <span class="tlaGNC tlaBgGNC">           2 :           : Uri.parse(initialRoute);</span></span>
+<span id="L445"><span class="lineNum">     445</span>              : </span>
+<span id="L446"><span class="lineNum">     446</span> <span class="tlaUNC tlaBgUNC">           0 :   int get stackLength =&gt; _stack.length;</span></span>
+<span id="L447"><span class="lineNum">     447</span>              : </span>
+<span id="L448"><span class="lineNum">     448</span> <span class="tlaGNC tlaBgGNC">           4 :   List&lt;Page&gt; get pages =&gt; List.unmodifiable(</span></span>
+<span id="L449"><span class="lineNum">     449</span> <span class="tlaGNC">          14 :         _stack.map((e) =&gt; e.page(getContext())).toList(),</span></span>
+<span id="L450"><span class="lineNum">     450</span>              :       );</span>
+<span id="L451"><span class="lineNum">     451</span>              : }</span>
         </pre>
               </td>
             </tr>

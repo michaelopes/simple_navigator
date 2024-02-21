@@ -83,4 +83,12 @@ class SimpleNavigatorStackWidgetState extends State<SimpleNavigatorStackWidget>
 
   @override
   String? get currentTab => widget.deletate.currentTab;
+
+  @override
+  Future replaceCurrent(String path,
+      {Map<String, String> queryParameters = const {},
+      Map<String, dynamic> extras = const {}}) {
+    // TODO: implement replaceCurrent
+    throw UnimplementedError();
+  }
 }

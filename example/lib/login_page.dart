@@ -28,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
                 "teste": "true",
               },
             );
+            //Navigator.of(context).pushReplacementNamed()
             if (kDebugMode) {
               print(result);
             }

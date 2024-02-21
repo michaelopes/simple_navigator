@@ -222,10 +222,36 @@ class SimpleNavigatorStackHandler {
     return item.resultCompleter.future;
   }
 
+  Future<dynamic> replaceCurrent(
+    String path, {
+    Map<String, String> queryParameters = const {},
+    Map<String, dynamic> extras = const {},
+  }) async {
+    if (Toolkit.hasPathsMatch(initialRoute, path)) {
+      return;
+    }
+
+    if (lastRouteReferenceId != null) {
+      _dialogHandler.popAll(lastRouteReferenceId!);
+    }
+
+    final route = _getItemByPath(path);
+    final item = SimpleNavigatoStackItem(
+      itemPath: path,
+      queryParameters: queryParameters,
+      extras: extras,
+      route: route,
+    );
+
+    _queue.add(() async => _processPush(path, item, replaceOrigin: true));
+    return item.resultCompleter.future;
+  }
+
   Future<void> _processPush(
     String path,
     SimpleNavigatoStackItem item, {
     bool isInitial = false,
+    bool replaceOrigin = false,
   }) async {
     if (isInitial) {
       _stack.clear();
@@ -243,7 +269,9 @@ class SimpleNavigatorStackHandler {
               : item.route.guardLoadingBuilder,
         ),
       );
-      if (!isInitial) notifyListeners();
+      if (!isInitial) {
+        _notifyWithNeglect();
+      }
       final gRes = await item.route.guard!();
       if (wSplash != null && wSplash is SimpleNavigatorSplashCompleterMixin) {
         await (wSplash as SimpleNavigatorSplashCompleterMixin).wait;
@@ -252,18 +280,45 @@ class SimpleNavigatorStackHandler {
         _stack.clear();
         _stack.add(
           SimpleNavigatoStackItem(
-            itemPath: path,
+            itemPath: gRes,
             route: _getItemByPath(gRes),
           ),
         );
       } else {
-        _stack.removeLast();
+        if (replaceOrigin) {
+          _stack.removeLast();
+        }
+        if (_stack.isNotEmpty) {
+          _stack.removeLast();
+        }
         _stack.add(item);
       }
     } else {
+      if (_stack.isEmpty && replaceOrigin) {
+        _stack.removeLast();
+      }
       _stack.add(item);
     }
-    notifyListeners();
+    if (replaceOrigin || isInitial) {
+      _notifyWithNeglect();
+    } else {
+      notifyListeners();
+    }
+  }
+
+  void _notifyWithNeglect() {
+    try {
+      final ctx = getContext();
+      if (Router.maybeOf(ctx) != null) {
+        Router.neglect(ctx, () {
+          notifyListeners();
+        });
+      } else {
+        notifyListeners();
+      }
+    } on NullableBuildContext {
+      notifyListeners();
+    }
   }
 
   bool canPop() {
@@ -387,6 +442,8 @@ class SimpleNavigatorStackHandler {
       : _stack.first is! SimpleNavigatoStackLoadingItem
           ? _stack.first.uri
           : Uri.parse(initialRoute);
+
+  int get stackLength => _stack.length;
 
   List<Page> get pages => List.unmodifiable(
         _stack.map((e) => e.page(getContext())).toList(),

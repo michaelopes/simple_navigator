@@ -79,9 +79,23 @@ abstract class ISimpleNavigator {
     Map<String, String> queryParameters = const {},
     Map<String, dynamic> extras = const {},
   });
+
+  Future<dynamic> replaceCurrent(
+    String path, {
+    Map<String, String> queryParameters = const {},
+    Map<String, dynamic> extras = const {},
+  });
+
   T? getQueryParameter<T>(String key);
   T? getPathParameter<T>(String key);
   T? getExtraParameter<T>(String key);
 
   String? get currentTab;
+}
+
+class NullableBuildContext implements Exception {
+  @override
+  String toString() {
+    return "Nullable BuildContext";
+  }
 }

@@ -35,7 +35,12 @@ class SimpleNavigatorDelegate extends RouterDelegate<Uri>
       availableRoutes: params.routes,
       initialRoute: params.initialRoute,
       dialogHandler: dialogHandler,
-      getContext: () => _context!,
+      getContext: () {
+        if (_context == null) {
+          throw NullableBuildContext();
+        }
+        return _context!;
+      },
       notifyListeners: () {
         notifyListeners();
       },
@@ -167,7 +172,8 @@ class SimpleNavigatorDelegate extends RouterDelegate<Uri>
         queryParameters: configuration.queryParameters,
       );
     } else if (configuration.path == _stackHandler.initialRoute &&
-        !_stackHandler.hasItems) {
+        (!_stackHandler.hasItems ||
+            _stackHandler.initialUri.path != _stackHandler.initialRoute)) {
       final itemPath = !configuration.hasQuery
           ? configuration.path
           : configuration.toString();
@@ -196,6 +202,17 @@ class SimpleNavigatorDelegate extends RouterDelegate<Uri>
       return _stackHandler.pop();
     }
     return true;
+  }
+
+  @override
+  Future<dynamic> replaceCurrent(String path,
+      {Map<String, String> queryParameters = const {},
+      Map<String, dynamic> extras = const {}}) {
+    return _stackHandler.replaceCurrent(
+      path,
+      extras: extras,
+      queryParameters: queryParameters,
+    );
   }
 }
 
