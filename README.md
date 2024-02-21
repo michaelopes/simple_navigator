@@ -193,3 +193,118 @@ class _SplashPageState extends State<SplashPage> {
     );
   }
 }
+```
+
+
+## Resources
+
+### Navigating to Another Screen
+
+To navigate to another screen using SimpleNavigator, use the following syntax:
+
+```dart
+final result = await SN.to.push("/<route name>", /* additional parameters */);
+```
+Replace <route name> with the actual name of the route you want to navigate to. 
+The SN.to.push method returns a result that can be utilized if there's a need 
+to retrieve values when the subsequent route is closed.
+
+### Closing a Screen
+To close the current screen within SimpleNavigator, use the following syntax:
+
+```dart
+SN.to.pop();
+```
+
+### Returning a Value to the Previous Screen
+If you want to return a value to the previous screen, use the following syntax:
+
+```dart
+SN.to.pop(/* value to be returned */);
+```
+
+### Closing Screens Until a Specific Route
+To close multiple screens until reaching a specific route, use the following syntax:
+
+```dart
+SN.to.popUntil("/<route name>", /* value to be returned (optional) */);
+```
+### Tab Navigation
+```dart
+final result = await SN.to.tab("/<tab name>");
+```
+
+## Tab page example
+
+```dart
+class HomePage extends StatefulWidget {
+  const HomePage({
+    super.key,
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    if (kDebugMode) {
+      print("_HomePageState");
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //This builder "SimpleNavigatorTabsBuilder"
+    //is important to change state tab navigation controll
+    return SimpleNavigatorTabsBuilder(
+      builder: (context) {
+        return Scaffold(
+          backgroundColor: Colors.purple,
+          bottomNavigationBar: BottomNavigationBar(
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: "Home",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: "Settings",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: "Profile",
+              )
+            ],
+            currentIndex: () {
+              if (SN.to.currentTab == "/main") {
+                return 0;
+              } else if (SN.to.currentTab == "/settings") {
+                return 1;
+              }
+              return 2;
+            }(),
+            onTap: (index) {
+              if (index == 2) {
+                SN.to.tab("/profile");
+              } else if (index == 1) {
+                SN.to.tab("/settings");
+              } else {
+                SN.to.tab("/main");
+              }
+            },
+          ),
+          body: widget.child,
+        );
+      },
+    );
+  }
+}
+
+```
+
