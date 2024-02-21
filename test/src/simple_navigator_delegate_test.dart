@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_navigator/simple_navigator.dart';
 
-import '../bootsrap.dart';
+import '../bootstrap.dart';
 
 void main() {
   testWidgets('Test simple navigator delegate simple push and pop',

@@ -68,6 +68,9 @@ void main() {
           await Future.delayed(const Duration(milliseconds: 50));
           return path;
         },
+        guardLoadingBuilder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
       SimpleNavigatorRoute(
         path: "/sub/:number",
