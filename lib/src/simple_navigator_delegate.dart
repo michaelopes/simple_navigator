@@ -9,7 +9,7 @@ import 'simple_navigator_route.dart';
 import 'simple_navigator_stack_handler.dart';
 import 'simple_navigator_stack_widget.dart';
 
-final class SimpleNavigatorDelegate extends RouterDelegate<Uri>
+class SimpleNavigatorDelegate extends RouterDelegate<Uri>
     with ChangeNotifier
     implements ISimpleNavigator {
   late final GlobalKey<NavigatorState> _navigatorKey;
