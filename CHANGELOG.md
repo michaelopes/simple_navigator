@@ -5,3 +5,7 @@
 ## 1.0.0-beta.2
 
 * Add documentation
+
+## 1.0.0-beta.3
+
+* SDK change for more compatibility
