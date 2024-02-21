@@ -154,4 +154,42 @@ Here's an example of how you can set up routes using SimpleNavigator:
     ],
   );
 ```
+## Splash Screen
+The purpose of the splash screen is to appear during the app's initialization before processing the guard of the root route. If you need the splash to stay on the screen longer, it can be added to an inheritance of the SimpleNavigatorSplashCompleterMixin mixin. When you want the splash to close, call widget.complete();, and it will close, showing the previously configured root route.
 
+Obs: guardLoadingBuilder is ignored when splash is informed on `SN.setRoutes` on initialRoute (root route) on example above is "/"
+
+### SplashPage Widget example
+
+```dart
+class SplashPage extends StatefulWidget with SimpleNavigatorSplashCompleterMixin {
+  SplashPage({super.key});
+
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    super.initState();
+    //The next page will called with complete executed
+    //Is a fake delay for simulate a process tasks before 
+    //Complete to show page configured as root
+    Future.delayed(const Duration(seconds: 1), () {
+      widget.complete();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () async {},
+          child: const Text("SPLASH"),
+        ),
+      ),
+    );
+  }
+}
