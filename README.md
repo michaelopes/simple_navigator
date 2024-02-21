@@ -157,7 +157,7 @@ Here's an example of how you can set up routes using SimpleNavigator:
 ## Splash Screen
 The purpose of the splash screen is to appear during the app's initialization before processing the guard of the root route. If you need the splash to stay on the screen longer, it can be added to an inheritance of the SimpleNavigatorSplashCompleterMixin mixin. When you want the splash to close, call widget.complete();, and it will close, showing the previously configured root route.
 
-Obs: guardLoadingBuilder is ignored when splash is informed on `SN.setRoutes` on initialRoute (root route) on example above is "/"
+Obs: guardLoadingBuilder is ignored when splash is informed in `SN.setRoutes` for initialRoute (root route) on example above is "/"
 
 ### SplashPage Widget example
 
