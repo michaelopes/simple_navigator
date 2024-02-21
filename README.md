@@ -234,6 +234,30 @@ SN.to.popUntil("/<route name>", /* value to be returned (optional) */);
 await SN.to.tab("/<tab name>");
 ```
 
+## Get extra parameter
+
+```dart
+final paramValue = SN.to.getExtraParameter("<param key>");
+```
+
+## Get path parameter
+
+```dart
+final paramValue = SN.to.getPathParameter("<param key>");
+```
+
+ ## Get query parameter
+
+```dart
+final paramValue = SN.to.getQueryParameter("<param key>");
+```  
+
+ ## Get current tab
+
+```dart
+final currentTab = SN.to.currentTab;
+```  
+
 ## Tab page example
 
 ```dart
